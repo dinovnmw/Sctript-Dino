@@ -55,9 +55,9 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/dinovnmw/Sctript-Dino
 
 ------- BUTTON
         AddButton(Tab1o, {
-     Name = "Start Auto Farm(Lag)",
+     Name = "Start Auto Farm(Kaitun)",
     Callback = function()
-loadstring(game:HttpGet("https://api.realaya.xyz/v1/files/l/73mkp0aqyfo4ypy8hvl0nz10lq49fey5.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/TBoyRoblox727/TBoyRobloxYT/refs/heads/main/bloxfruit-kaitan-main.lua"))()
   end
   })
     AddButton(Tab2o, {

@@ -1,210 +1,92 @@
-local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/vinh12eqweaws/zingmods/refs/heads/main/zingpro')))()
+loadstring(game:HttpGet(("https://raw.githubusercontent.com/daucobonhi/Ui-Redz-V2/refs/heads/main/UiREDzV2.lua")))()
 
-local Window = OrionLib:MakeWindow({Name = "Dino Hub V0.1", HidePremium = false, SaveConfig = true, ConfigFolder = "dxl_bf"})
-
-local Tab = Window:MakeTab({
-	Name = "Main",
-	Icon = "rbxassetid://4483345998",
-	PremiumOnly = false
-})
-
-local Tab2 = Window:MakeTab({
-	Name = "Client",
-	Icon = "rbxassetid://4483345998",
-	PremiumOnly = false
-})
-
-local Tab3 = Window:MakeTab({
-	Name = "Mics",
-	Icon = "rbxassetid://4483345998",
-	PremiumOnly = false
-})
-Tab3:AddButton({
-	Name = "Fix Lag",
-	Callback = function()
-        repeat wait(5) until game:IsLoaded()
-      loadstring(game:HttpGet("https://raw.githubusercontent.com/TurboLite/Script/main/FixLag.lua"))()
-end
-})
-
-Tab3:AddButton({
-	Name = "Anti Kick",
-	Callback = function()
-        repeat wait(5) until game:IsLoaded()
-     loadstring(game:HttpGet("https://pastebin.com/raw/FPfaukXN"))()
-end
-})
-Tab:AddButton({
-	Name = "Auto Farm-Spino béo",
-	Callback = function()
-        repeat wait(5) until game:IsLoaded()
-        loadstring(game:HttpGet("https://api.realaya.xyz/v1/files/l/73mkp0aqyfo4ypy8hvl0nz10lq49fey5.lua"))()
-end
-})
-Tab:AddButton({
-	Name = "Auto Bounty",
-	Callback = function()
-        repeat wait(5) until game:IsLoaded()
-        getgenv().Configs = {
-    ["Team"] = "Pirates", -- Pirates/Marines
-    ["Speed Tween"] = 300, -- Highly recommend 300 speed is good enough to anti security kick. maximum you can use is 350
-    ["Auto turn on race v3"] = true,
-    ["Auto turn on race v4"] = true,
-    ["Click Time"] = 0.50,
-    ["White Screen"] = false, -- false / true
-    ["Chat"] = {
-        ["Enable"] = false,
-        ["Message"] = {"gg", "np", "hi", "hehe"}, -- Input your message here
-    },
-    ["Run When Low Health"] = {
-        ["Enable"] = false,
-        ["Health"] = 3500,
-        ["Come back"] = true
-    },
-    ["Region"] = "Singapore", -- Singapore, United States, Germany, France, India, ??? ... or "All"
-    ["Weapons"] = {
-        ["Melee"] = {
-            ["Enable"] = true,
-            ["Delay"] = 1.75,
-            ["Order"] = 3,
-            ["Skills"] = {
-                ["Z"] = {
-                    ["Enable"] = true,
-                    ["HoldTime"] = 0,
-                    ["Order"] = 2,
-                    ["Time to next skill"] = 0
-                },
-                ["X"] = {
-                    ["Enable"] = true,
-                    ["HoldTime"] = 0,
-                    ["Order"] = 1,
-                    ["Time to next skill"] = 0
-                },
-                ["C"] = {
-                    ["Enable"] = true,
-                    ["HoldTime"] = 0,
-                    ["Order"] = 3,
-                    ["Time to next skill"] = 0
-                }
-            }
-        },
-        ["Blox Fruit"] = {
-            ["Enable"] = false,
-            ["Delay"] = 0.2,
-            ["Order"] = 4,
-            ["Skills"] = {
-                ["Z"] = {
-                    ["Enable"] = true,
-                    ["HoldTime"] = 0,
-                    ["Order"] = 2,
-                    ["Time to next skill"] = 0
-                },
-                ["X"] = {
-                    ["Enable"] = true,
-                    ["HoldTime"] = 0,
-                    ["Order"] = 1,
-                    ["Time to next skill"] = 0
-                },
-                ["C"] = {
-                    ["Enable"] = false,
-                    ["HoldTime"] = 0,
-                    ["Order"] = 0,
-                    ["Time to next skill"] = 0
-                },
-                ["V"] = {
-                    ["Enable"] = false,
-                    ["HoldTime"] = 0,
-                    ["Order"] = 0,
-                    ["Time to next skill"] = 0
-                },
-                ["F"] = {
-                    ["Enable"] = false,
-                    ["HoldTime"] = 0,
-                    ["Order"] = 0,
-                    ["Time to next skill"] = 0
-                }
-            }
-        },
-        ["Sword"] = {
-            ["Enable"] = true,
-            ["Delay"] = 0.75,
-            ["Order"] = 1,
-            ["Skills"] = {
-                ["Z"] = {
-                    ["Enable"] = true,
-                    ["HoldTime"] = 0,
-["Order"] = 1,
-                    ["Time to next skill"] = 0
-                },
-                ["X"] = {
-                    ["Enable"] = true,
-                    ["HoldTime"] = 0,
-                    ["Order"] = 2,
-                    ["Time to next skill"] = 0
-                }
-            }
-        },
-        ["Gun"] = {
-            ["Enable"] = false,
-            ["Delay"] = 1.5,
-            ["Order"] = 2,
-            ["Skills"] = {
-                ["Z"] = {
-                    ["Enable"] = true,
-                    ["HoldTime"] = 0,
-                    ["Order"] = 2,
-                    ["Time to next skill"] = 0
-                },
-                ["X"] = {
-                    ["Enable"] = true,
-                    ["HoldTime"] = 0,
-                    ["Order"] = 1,
-                    ["Time to next skill"] = 0
-                }
-            }
-        }
-    },
-    ["Theme"] = {
-        ["Enable"] = true,
-        ["Hide Theme"] = true,
-        ["Name"] = "Gojo", -- Gojo
-        ["Custom Theme"] = {
-            ["Enable"] = false, -- enable theme first
-            ["Text Color"] = Color3.fromRGB(231, 85, 88),
-            ["Character Position"] = UDim2.new(0.563000023, 0, -0.174999997, 0),
-            ["Character Size"] = UDim2.new(0.3, 0, 1.4, 0)
-        }
-    },
-    ["Webhook"] = {
-        ["Enable"] = false,
-        ["Url"] = "",
-        ["Image"] = "https://media.discordapp.net/attachments/1162947702615711765/1229739840661094451/background.png?ex=67576eb9&is=67561d39&hm=da94e1b066b7a974e1577fe4fb355ce2907de8acf56aa4c467d7023a59d1d927&=&format=webp&quality=lossless&width=692&height=395"
+       local Window = MakeWindow({
+         Hub = {
+         Title = "Dino Hub",
+         Animation = "Welcome!"
+         },
+        Key = {
+        KeySystem = false,
+        Title = "Key System",
+        Description = "",
+        KeyLink = "",
+        Keys = {"1234"},
+        Notifi = {
+        Notifications = true,
+        CorrectKey = "Running the Script...",
+       Incorrectkey = "The key is incorrect",
+       CopyKeyLink = "Copied to Clipboard"
+      }
     }
-}
+  })
 
-repeat task.wait(1) pcall(function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Xero2409/XeroHub/refs/heads/main/bounty.lua"))() end) until getgenv().Execution
-end
-})
+       MinimizeButton({
+       Image = "http://www.roblox.com/asset/?id=113844106912701",
+       Size = {60, 60},
+       Color = Color3.fromRGB(10, 10, 10),
+       Corner = true,
+       Stroke = true,
+       StrokeColor = Color3.fromRGB(255, 0, 0)
+      })
+      
+------ Tab
+     local Tab1o = MakeTab({Name = "Main"})
+     local Tab2o = MakeTab({Name = "Sub-Farm"})
+     local Tab3o = MakeTab({Name = "Mics"})
+     
+     
+-------TOGGLE 
+
+        Toggle = AddToggle(Tab3o, {
+      Name = "Fix Lag + Haki Quan Sát",
+      Default = false,
+      Callback = function()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/dinovnmw/Sctript-Dino/refs/heads/main/Fix%20lag%2BHAki%20QUan%20s%C3%A1t"))()
+     end
+    })
+        Toggle = AddToggle(Tab3o, {
+      Name = "Anti Ban+Kick",
+      Default = false,
+      Callback = function()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/dinovnmw/Sctript-Dino/refs/heads/main/Anti%20ban"))
+     end
+    })
 
 
-Tab:AddButton({
-	Name = "Fruit Finder",
-	Callback = function()
-        repeat wait(5) until game:IsLoaded()
-        loadstring(game:HttpGet('https://raw.githubusercontent.com/AdminusGames/Blox_Fruits_Sniper/main/.lua'))()
-  	end    
-})
+------- BUTTON
+        AddButton(Tab1o, {
+     Name = "Start Auto Farm(Lag)",
+    Callback = function()
+loadstring(game:HttpGet("https://api.realaya.xyz/v1/files/l/73mkp0aqyfo4ypy8hvl0nz10lq49fey5.lua"))()
+  end
+  })
+    AddButton(Tab2o, {
+     Name = "Fruits Finder",
+    Callback = function()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/TurboLite/Script/refs/heads/main/TraiCay.lua"))()
+  end
+  })
+    AddButton(Tab2o, {
+     Name = "Start Auto Bounty",
+    Callback = function()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/dinovnmw/Sctript-Dino/refs/heads/main/Bounty"))()
+  end
+  })
 
-Tab2:AddButton({
-	Name = "Arceus X",
-	Callback = function()
-        repeat wait(5) until game:IsLoaded()
-      loadstring(game:HttpGet("https://raw.githubusercontent.com/AZYsGithub/chillz-workshop/main/Arceus%20X%20V3"))()
-end
-})
-Tab:AddButton({
-	Name = "Chests Farm",
-	Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/NickelHUBB/SonicTuru/main/ChestFarmOp"))()
-end    
-})
+----- Dropdown 
+
+  Dropdown = AddDropdown(Tab1o, {
+     Name = "Weapons",
+     Options = {"Melee", "Sword", "Blox Fruits", "Gun"},
+     Default = "Melee",
+     Callback = function()
+     end
+   })
+
+----- Section 
+   
+   Section = AddSection(Tab1o, {"sec"})          
+
+----- Paragraph 
+                    
+   Paragraph = AddParagraph(Farm, {"para", ""})

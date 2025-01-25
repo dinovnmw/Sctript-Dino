@@ -1,0 +1,121 @@
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local VirtualUser = game:GetService("VirtualUser")
+local Player = Players.LocalPlayer
+
+-- Anti-AFK (Chống bị đá khi AFK)
+Player.Idled:Connect(function()
+    VirtualUser:CaptureController()
+    VirtualUser:ClickButton2(Vector2.new(0, 0))
+end)
+
+-- Bypass Auto Disconnect
+local function preventKick()
+    local mt = getrawmetatable(game)
+    setreadonly(mt, false)
+
+    local original = mt.__namecall
+    mt.__namecall = newcclosure(function(self, ...)
+        local args = {...}
+        local method = getnamecallmethod()
+
+        if tostring(method) == "Kick" then
+            -- Chặn tất cả các lệnh Kick từ server
+            print("[Anti-Kick]: Blocked a Kick attempt!")
+            return nil
+        end
+        return original(self, unpack(args))
+    end)
+end
+
+preventKick()
+
+-- Auto Reconnect (Tự động kết nối lại nếu bị đá khỏi game)
+local function autoReconnect()
+    local isReconnecting = false
+    game.CoreGui.ChildAdded:Connect(function(child)
+        if child.Name == "ErrorPrompt" and not isReconnecting then
+            isReconnecting = true
+            print("[Anti-Ban]: Disconnected! Attempting to reconnect...")
+
+            wait(2) -- Chờ một chút trước khi thử kết nối lại
+            game:GetService("TeleportService"):Teleport(game.PlaceId)
+        end
+    end)
+end
+
+autoReconnect()
+
+-- Anti-Report (Ẩn hành động để tránh bị người chơi khác báo cáo)
+local function antiReport()
+    local originalChat
+    local mt = getrawmetatable(game)
+    setreadonly(mt, false)
+
+    originalChat = mt.__namecall
+    mt.__namecall = newcclosure(function(self, ...)
+        local args = {...}
+        local method = getnamecallmethod()
+
+        -- Ẩn mọi tin nhắn bị gửi đi
+        if tostring(self) == "SayMessageRequest" and tostring(method) == "FireServer" then
+            print("[Anti-Report]: Blocked a chat message!")
+            return nil
+        end
+        return originalChat(self, unpack(args))
+    end)
+end
+
+antiReport()
+
+-- Ping Stabilizer (Ổn định ping để giảm nguy cơ lag dẫn đến đá)
+local function stabilizePing()
+    RunService.Stepped:Connect(function()
+        setfpscap(60) -- Cố định FPS
+        if game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue() > 300 then
+            print("[Anti-Lag]: Ping quá cao, giảm hiệu suất để ổn định...")
+            for _, v in pairs(game:GetDescendants()) do
+                if v:IsA("BasePart") then
+                    v.Material = Enum.Material.SmoothPlastic
+                end
+            end
+        end
+    end)
+end
+
+stabilizePing()
+
+-- Hide Exploits (Ẩn các công cụ exploit khỏi các bản kiểm tra của game)
+local function hideExploits()
+    local mt = getrawmetatable(game)
+    setreadonly(mt, false)
+
+    local originalIndex = mt.__index
+    mt.__index = newcclosure(function(self, key)
+        if key == "Kick" then
+            print("[Anti-Exploit]: Blocked access to Kick function!")
+            return function() end
+        end
+        return originalIndex(self, key)
+    end)
+end
+
+hideExploits()
+
+-- Advanced Anti-Detection
+local function advancedAntiDetection()
+    local oldNameCall = nil
+    oldNameCall = hookmetamethod(game, "__namecall", function(self, ...)
+        local args = {...}
+        local method = getnamecallmethod()
+        if method == "FireServer" and tostring(self) == "ReportAbuse" then
+            print("[Anti-Detection]: Blocked a report attempt!")
+            return nil
+        end
+        return oldNameCall(self, ...)
+    end)
+end
+
+advancedAntiDetection()
+
+print("[Anti-Ban]: Script initialized successfully!")

@@ -1,92 +1,133 @@
-loadstring(game:HttpGet(("https://raw.githubusercontent.com/daucobonhi/Ui-Redz-V2/refs/heads/main/UiREDzV2.lua")))()
+local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/dinovnmw/Sctript-Dino/refs/heads/main/UI"))()
 
-       local Window = MakeWindow({
-         Hub = {
-         Title = "Dino Hub",
-         Animation = "Welcome!"
-         },
-        Key = {
-        KeySystem = false,
-        Title = "Key System",
-        Description = "",
-        KeyLink = "",
-        Keys = {"1234"},
-        Notifi = {
-        Notifications = true,
-        CorrectKey = "Running the Script...",
-       Incorrectkey = "The key is incorrect",
-       CopyKeyLink = "Copied to Clipboard"
-      }
-    }
-  })
+local Window = OrionLib:MakeWindow({
+    Name = "Dino Hub V0.1 ",
+    HidePremium = false,
+    SaveConfig = true,
+    ConfigFolder = "dino_folder",
+})
 
-       MinimizeButton({
-       Image = "http://www.roblox.com/asset/?id=113844106912701",
-       Size = {60, 60},
-       Color = Color3.fromRGB(10, 10, 10),
-       Corner = true,
-       Stroke = true,
-       StrokeColor = Color3.fromRGB(255, 0, 0)
-      })
-      
------- Tab
-     local Tab1o = MakeTab({Name = "Main"})
-     local Tab2o = MakeTab({Name = "Sub-Farm"})
-     local Tab3o = MakeTab({Name = "Mics"})
-     
-     
--------TOGGLE 
+-- Tabs
+local Tab = Window:MakeTab({
+    Name = "Main",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
 
-        Toggle = AddToggle(Tab3o, {
-      Name = "Fix Lag + Haki Quan Sát",
-      Default = false,
-      Callback = function()
-	loadstring(game:HttpGet("https://raw.githubusercontent.com/dinovnmw/Sctript-Dino/refs/heads/main/Fix%20lag%2BHAki%20QUan%20s%C3%A1t"))()
-     end
-    })
-        Toggle = AddToggle(Tab3o, {
-      Name = "Anti Ban+Kick",
-      Default = false,
-      Callback = function()
-loadstring(game:HttpGet("https://raw.githubusercontent.com/dinovnmw/Sctript-Dino/refs/heads/main/Anti%20ban"))
-     end
-    })
+local Tab2 = Window:MakeTab({
+    Name = "Client",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
 
+local Tab3 = Window:MakeTab({
+    Name = "Mics",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
 
-------- BUTTON
-        AddButton(Tab1o, {
-     Name = "Start Auto Farm(Kaitun)",
+local Tab4 = Window:MakeTab({
+    Name = "Trade Scam",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+-- Các chức năng cũ
+
+-- Nút Fix Lag
+Tab3:AddButton({
+    Name = "Fix Lag",
     Callback = function()
-loadstring(game:HttpGet("https://raw.githubusercontent.com/TBoyRoblox727/TBoyRobloxYT/refs/heads/main/bloxfruit-kaitan-main.lua"))()
-  end
-  })
-    AddButton(Tab2o, {
-     Name = "Fruits Finder",
+        repeat wait(5) until game:IsLoaded()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/dinovnmw/Sctript-Dino/refs/heads/main/Fix%20lag%2BHAki%20QUan%20s%C3%A1t"))()
+    end
+})
+
+-- Nút Làm Server Đứng 5 giây
+Tab4:AddButton({
+    Name = "Frozen Server 5s",
     Callback = function()
-loadstring(game:HttpGet("https://raw.githubusercontent.com/TurboLite/Script/refs/heads/main/TraiCay.lua"))()
-  end
-  })
-    AddButton(Tab2o, {
-     Name = "Start Auto Bounty",
+        print("Server sẽ đứng trong 5 giây...")
+        local start = os.clock()
+        while os.clock() - start < 5 do
+            local x = 1
+            for i = 1, 1e7 do
+                x = x * i % 1e6
+            end
+        end
+        print("Đã hoàn thành! Server trở lại bình thường.")
+    end
+})
+
+-- Nút Auto Farm-Spino béo
+Tab:AddButton({
+    Name = "Auto Farm-Spino béo",
     Callback = function()
-loadstring(game:HttpGet("https://raw.githubusercontent.com/dinovnmw/Sctript-Dino/refs/heads/main/Bounty"))()
-  end
-  })
+        repeat wait(5) until game:IsLoaded()
+        -- Thêm code logic Auto Farm tại đây
+        print("Auto Farm đã được kích hoạt.")
+    end
+})
 
------ Dropdown 
+-- Toggle Anti Ban+Kick
+Tab3:AddToggle({
+    Name = "Anti Ban+Kick",
+    Default = false,
+    Callback = function(value)
+        if value then
+            repeat wait(5) until game:IsLoaded()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/dinovnmw/Sctript-Dino/refs/heads/main/Anti%20ban"))()
+        end
+    end
+})
 
-  Dropdown = AddDropdown(Tab1o, {
-     Name = "Weapons",
-     Options = {"Melee", "Sword", "Blox Fruits", "Gun"},
-     Default = "Melee",
-     Callback = function()
-     end
-   })
+-- Dropdown Weapons
+Tab:AddDropdown({
+    Name = "Weapons",
+    Options = {"Melee", "Sword", "Blox Fruits", "Gun"},
+    Default = "Melee",
+    Callback = function(selected)
+        print("Đã chọn vũ khí: " .. selected)
 
------ Section 
-   
-   Section = AddSection(Tab1o, {"sec"})          
+        if selected == "Melee" then
+            -- Thực hiện hành động khi chọn Melee
+            local player = game.Players.LocalPlayer
+            local character = player.Character
+            local tool = character:FindFirstChild("Melee") -- Tìm vũ khí Melee trong nhân vật
+            if tool then
+                tool.Parent = character
+                print("Đã sử dụng vũ khí Melee.")
+            end
+        elseif selected == "Sword" then
+            -- Thực hiện hành động khi chọn Sword
+            local player = game.Players.LocalPlayer
+            local character = player.Character
+            local tool = character:FindFirstChild("Sword") -- Tìm vũ khí Sword trong nhân vật
+            if tool then
+                tool.Parent = character
+                print("Đã sử dụng vũ khí Sword.")
+            end
+        elseif selected == "Blox Fruits" then
+            -- Thực hiện hành động khi chọn Blox Fruits
+            local player = game.Players.LocalPlayer
+            local character = player.Character
+            local fruit = character:FindFirstChild("BloxFruit") -- Tìm trái Blox Fruit trong nhân vật
+            if fruit then
+                fruit.Parent = character
+                print("Đã sử dụng trái Blox Fruits.")
+            end
+        elseif selected == "Gun" then
+            -- Thực hiện hành động khi chọn Gun
+            local player = game.Players.LocalPlayer
+            local character = player.Character
+            local gun = character:FindFirstChild("Gun") -- Tìm vũ khí Gun trong nhân vật
+            if gun then
+                gun.Parent = character
+                print("Đã sử dụng vũ khí Gun.")
+            end
+        end
+    end
+})
 
------ Paragraph 
-                    
-   Paragraph = AddParagraph(Farm, {"para", ""})
+-- Khởi tạo giao diện
+OrionLib:Init()

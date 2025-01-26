@@ -1,7 +1,7 @@
 local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/dinovnmw/Sctript-Dino/refs/heads/main/UI"))()
 
 local Window = OrionLib:MakeWindow({
-    Name = "Dino Hub V0.1 ",
+    Name = "Dino Hub V0. ",
     HidePremium = false,
     SaveConfig = true,
     ConfigFolder = "dino_folder",
@@ -46,6 +46,7 @@ Tab3:AddButton({
 -- Nút Làm Server Đứng 5 giây
 Tab4:AddButton({
     Name = "Frozen Server 5s",
+    Description = "Dùng khi người trade với mình đã đồng ý và ấn nút này sẽ bị đóng băng 5s khiến người trade với mình không thể hủy trade",
     Callback = function()
         print("Server sẽ đứng trong 5 giây...")
         local start = os.clock()
@@ -61,10 +62,10 @@ Tab4:AddButton({
 
 -- Nút Auto Farm-Spino béo
 Tab:AddButton({
-    Name = "Auto Farm-Spino béo",
+    Name = "Auto Farm(Kaitun)-Spino béo",
     Callback = function()
         repeat wait(5) until game:IsLoaded()
-        -- Thêm code logic Auto Farm tại đây
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/TBoyRoblox727/TBoyRobloxYT/refs/heads/main/bloxfruit-kaitan-main.lua"))()
         print("Auto Farm đã được kích hoạt.")
     end
 })

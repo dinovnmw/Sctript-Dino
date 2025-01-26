@@ -1,9 +1,13 @@
+-- Anti-Ban/Kick for Blox Fruits (Optimized)
+
+-- Services
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local VirtualUser = game:GetService("VirtualUser")
+local Stats = game:GetService("Stats")
 local Player = Players.LocalPlayer
 
--- Anti-AFK (Chống bị đá khi AFK)
+-- Anti-AFK
 Player.Idled:Connect(function()
     VirtualUser:CaptureController()
     VirtualUser:ClickButton2(Vector2.new(0, 0))
@@ -20,61 +24,52 @@ local function preventKick()
         local method = getnamecallmethod()
 
         if tostring(method) == "Kick" then
-            -- Chặn tất cả các lệnh Kick từ server
-            print("[Anti-Kick]: Blocked a Kick attempt!")
-            return nil
+            return nil -- Chặn lệnh Kick
         end
         return original(self, unpack(args))
     end)
 end
-
 preventKick()
 
--- Auto Reconnect (Tự động kết nối lại nếu bị đá khỏi game)
+-- Auto Reconnect
 local function autoReconnect()
     local isReconnecting = false
     game.CoreGui.ChildAdded:Connect(function(child)
         if child.Name == "ErrorPrompt" and not isReconnecting then
             isReconnecting = true
-            print("[Anti-Ban]: Disconnected! Attempting to reconnect...")
-
-            wait(2) -- Chờ một chút trước khi thử kết nối lại
+            wait(2) -- Thử kết nối lại sau 2 giây
             game:GetService("TeleportService"):Teleport(game.PlaceId)
         end
     end)
 end
-
 autoReconnect()
 
--- Anti-Report (Ẩn hành động để tránh bị người chơi khác báo cáo)
+-- Anti-Report
 local function antiReport()
-    local originalChat
     local mt = getrawmetatable(game)
     setreadonly(mt, false)
 
-    originalChat = mt.__namecall
+    local originalChat = mt.__namecall
     mt.__namecall = newcclosure(function(self, ...)
         local args = {...}
         local method = getnamecallmethod()
 
-        -- Ẩn mọi tin nhắn bị gửi đi
         if tostring(self) == "SayMessageRequest" and tostring(method) == "FireServer" then
-            print("[Anti-Report]: Blocked a chat message!")
-            return nil
+            return nil -- Chặn gửi tin nhắn
         end
         return originalChat(self, unpack(args))
     end)
 end
-
 antiReport()
 
--- Ping Stabilizer (Ổn định ping để giảm nguy cơ lag dẫn đến đá)
+-- Ping Stabilizer
 local function stabilizePing()
+    local lastOptimization = tick()
     RunService.Stepped:Connect(function()
         setfpscap(60) -- Cố định FPS
-        if game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue() > 300 then
-            print("[Anti-Lag]: Ping quá cao, giảm hiệu suất để ổn định...")
-            for _, v in pairs(game:GetDescendants()) do
+        if Stats.Network.ServerStatsItem["Data Ping"]:GetValue() > 300 and (tick() - lastOptimization > 5) then
+            lastOptimization = tick() -- Chỉ thực hiện mỗi 5 giây
+            for _, v in ipairs(workspace:GetDescendants()) do
                 if v:IsA("BasePart") then
                     v.Material = Enum.Material.SmoothPlastic
                 end
@@ -82,10 +77,9 @@ local function stabilizePing()
         end
     end)
 end
-
 stabilizePing()
 
--- Hide Exploits (Ẩn các công cụ exploit khỏi các bản kiểm tra của game)
+-- Hide Exploits
 local function hideExploits()
     local mt = getrawmetatable(game)
     setreadonly(mt, false)
@@ -93,13 +87,11 @@ local function hideExploits()
     local originalIndex = mt.__index
     mt.__index = newcclosure(function(self, key)
         if key == "Kick" then
-            print("[Anti-Exploit]: Blocked access to Kick function!")
-            return function() end
+            return function() end -- Chặn Kick function
         end
         return originalIndex(self, key)
     end)
 end
-
 hideExploits()
 
 -- Advanced Anti-Detection
@@ -109,13 +101,11 @@ local function advancedAntiDetection()
         local args = {...}
         local method = getnamecallmethod()
         if method == "FireServer" and tostring(self) == "ReportAbuse" then
-            print("[Anti-Detection]: Blocked a report attempt!")
-            return nil
+            return nil -- Chặn lệnh Report
         end
         return oldNameCall(self, ...)
     end)
 end
-
 advancedAntiDetection()
 
 print("[Anti-Ban]: Script initialized successfully!")

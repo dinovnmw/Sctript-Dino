@@ -1,0 +1,124 @@
+-- Auto Farm with Melee Attack, Hover 5m Above Enemies, and Bring Mob for Blox Fruits
+
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local tweenService = game:GetService("TweenService")
+local vu = game:GetService("VirtualUser")
+local isFarming = true -- Biến điều khiển Auto Farm
+
+-- Anti-ban cơ bản
+player.Idled:Connect(function()
+    vu:CaptureController()
+    vu:Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+    wait(1)
+    vu:Button2Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+end)
+
+-- Tự động nhận nhiệm vụ phù hợp với cấp độ
+local function getQuest()
+    local level = player.Data.Level.Value
+    local questNPC = nil
+    local questPosition = nil
+
+    if level >= 1 and level <= 50 then
+        questNPC = "Bandit Quest Giver"
+    elseif level > 50 and level <= 100 then
+        questNPC = "Desert Quest Giver"
+    elseif level > 100 and level <= 200 then
+        questNPC = "Frozen Quest Giver"
+    elseif level > 200 and level <= 300 then
+        questNPC = "Skylands Quest Giver"
+    elseif level > 300 and level <= 400 then
+        questNPC = "Marineford Quest Giver"
+    elseif level > 400 and level <= 700 then
+        questNPC = "New World Quest Giver"
+    elseif level > 700 and level <= 1500 then
+        questNPC = "Second Sea Quest Giver"
+    elseif level > 1500 and level <= 2400 then
+        questNPC = "Third Sea Quest Giver"
+    end
+
+    -- Tìm và di chuyển đến NPC nhận nhiệm vụ
+    for _, npc in pairs(workspace.NPCs:GetChildren()) do
+        if npc.Name == questNPC then
+            questPosition = npc.HumanoidRootPart.Position
+            break
+        end
+    end
+
+    if questPosition then
+        character.HumanoidRootPart.CFrame = CFrame.new(questPosition + Vector3.new(0, 5, 0))
+        wait(1)
+        fireproximityprompt(workspace.NPCs[questNPC].HumanoidRootPart.ProximityPrompt)
+        wait(1)
+        local questButton = player.PlayerGui.QuestGui.Accept
+        if questButton then
+            questButton:FireServer()
+        end
+    end
+end
+
+-- Gom quái (Bring Mob)
+local function bringMobs()
+    local nearestMob = getNearestNPC()
+    if nearestMob then
+        nearestMob.HumanoidRootPart.CFrame = character.HumanoidRootPart.CFrame + Vector3.new(0, -5, 0)
+    end
+end
+
+-- Tìm quái gần nhất
+local function getNearestNPC()
+    local nearestDistance = math.huge
+    local nearestNPC = nil
+
+    for _, npc in pairs(workspace.Enemies:GetChildren()) do
+        if npc:FindFirstChild("Humanoid") and npc.Humanoid.Health > 0 then
+            local distance = (npc.HumanoidRootPart.Position - character.HumanoidRootPart.Position).magnitude
+            if distance < nearestDistance then
+                nearestDistance = distance
+                nearestNPC = npc
+            end
+        end
+    end
+
+    return nearestNPC
+end
+
+-- Tự động tấn công quái bằng Melee
+local function attackWithMelee(target)
+    if character and target and target:FindFirstChild("Humanoid") and target.Humanoid.Health > 0 then
+        -- Sử dụng vũ khí cận chiến
+        local tool = character:FindFirstChildOfClass("Tool")
+        if tool then
+            character.Humanoid:EquipTool(tool)
+        end
+
+        -- Tấn công quái liên tục
+        while target.Humanoid.Health > 0 and target.Parent do
+            character.HumanoidRootPart.CFrame = CFrame.new(target.HumanoidRootPart.Position + Vector3.new(0, 5, 0))
+            tool.Activated:Fire() -- Kích hoạt tấn công
+            wait(0.5) -- Delay between attacks to avoid spamming
+        end
+    end
+end
+
+-- Tự động đánh quái
+local function autoFarm()
+    while isFarming do
+        -- Nhận nhiệm vụ nếu chưa có
+        if not player.PlayerGui.Main.Quest.Visible then
+            getQuest()
+        end
+
+        -- Tìm quái và tấn công
+        local target = getNearestNPC()
+        if target then
+            bringMobs() -- Gom quái lại
+            attackWithMelee(target) -- Tấn công quái bằng Melee
+        end
+        wait(0.1)
+    end
+end
+
+-- Bắt đầu Auto Farm
+autoFarm()

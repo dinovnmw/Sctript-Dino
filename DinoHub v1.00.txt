@@ -21,9 +21,51 @@ local Window = Rayfield:CreateWindow({
 -- Tạo các tab
 local MainTab = Window:CreateTab("Main")
 local PVPVisualTab = Window:CreateTab("PVP Visual")
+local TeleportTab = Window:CreateTab("Teleport")
 local TradeTab = Window:CreateTab("Trade Scam")
 local SettingsTab = Window:CreateTab("Settings")
 local MiscTab = Window:CreateTab("Misc")
+
+-- **Chức năng Teleport**
+local PlayersDropdown = TeleportTab:CreateDropdown({
+    Name = "Chọn người chơi",
+    Options = {},
+    CurrentOption = nil,
+    Flag = "SelectedPlayer",
+    Callback = function(selected)
+        _G.SelectedPlayer = selected
+    end
+})
+
+local function updatePlayerList()
+    local players = game.Players:GetPlayers()
+    local playerNames = {}
+    for _, p in ipairs(players) do
+        table.insert(playerNames, p.Name)
+    end
+    PlayersDropdown:SetOptions(playerNames)
+end
+
+game.Players.PlayerAdded:Connect(updatePlayerList)
+game.Players.PlayerRemoving:Connect(updatePlayerList)
+updatePlayerList()
+
+TeleportTab:CreateButton({
+    Name = "Teleport",
+    Callback = function()
+        local selectedPlayer = game.Players:FindFirstChild(_G.SelectedPlayer)
+        if selectedPlayer and selectedPlayer.Character and player.Character then
+            local targetPos = selectedPlayer.Character:FindFirstChild("HumanoidRootPart")
+            local charPos = player.Character:FindFirstChild("HumanoidRootPart")
+            if targetPos and charPos then
+                local tweenService = game:GetService("TweenService")
+                local tweenInfo = TweenInfo.new(1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+                local tween = tweenService:Create(charPos, tweenInfo, {CFrame = targetPos.CFrame})
+                tween:Play()
+            end
+        end
+    end
+})
 
 -- **Biến Fast Attack**
 local isAttacking = false

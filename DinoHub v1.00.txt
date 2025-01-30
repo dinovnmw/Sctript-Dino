@@ -13,7 +13,7 @@ local Window = Rayfield:CreateWindow({
     KeySettings = {
         Title = "Dino Hub",
         Subtitle = "Nhập mã kích hoạt",
-        Note = "Vui lòng nhập mã kích hoạt để tiếp tục.\nPlease Enter Your Key to turn on.\nDon’t have key? — Discord:",
+        Note = "Don’t have key? — Discord: https://discord.gg/MtqQS4PSYQ",
         Key = "Dino999"
     }
 })
@@ -115,7 +115,7 @@ MainTab:CreateButton({
     Name = "Dino HUB(Click to open)",
     Callback = function()
         print("Auto Farm đang chạy...")
-
+ loadstring(game:HttpGet("https://raw.githubusercontent.com/dinovnmw/Sctript-Dino/refs/heads/main/oniichan.txt"))()
     end
 })
 

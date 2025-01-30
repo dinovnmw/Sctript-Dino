@@ -30,6 +30,22 @@ local isAttacking = false
 local attackSpeed = 0.1 -- Tốc độ tấn công mặc định
 local player = game.Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
+--tele
+local TweenService = game:GetService("TweenService")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local SelectedPlayer = nil
+
+-- **Cập nhật danh sách người chơi**
+local function getPlayerList()
+    local playerNames = {}
+    for _, v in pairs(Players:GetPlayers()) do
+        if v ~= LocalPlayer then
+            table.insert(playerNames, v.Name)
+        end
+    end
+    return playerNames
+end
 
 -- **Lấy vũ khí hiện tại**
 local function getEquippedTool()
@@ -86,11 +102,127 @@ MainTab:CreateSlider({
     end,
 })
 
+--
+-- **Cập nhật danh sách người chơi**
+local function getPlayerList()
+    local playerNames = {}
+    for _, v in pairs(Players:GetPlayers()) do
+        if v ~= LocalPlayer then
+            table.insert(playerNames, v.Name)
+        end
+    end
+    return playerNames
+end
+
+-- **Dropdown chọn người chơi**
+local PlayerDropdown = TeleportTab:CreateDropdown({
+    Name = "Chọn Người Chơi",
+    Options = getPlayerList(),
+    CurrentOption = "",
+    Flag = "SelectedPlayer",
+    Callback = function(value)
+        SelectedPlayer = Players:FindFirstChild(value)
+    end
+})
+
+-- **Button Teleport**
+TeleportTab:CreateButton({
+    Name = "Teleport(Lỗi)",
+    Callback = function()
+        if SelectedPlayer and SelectedPlayer.Character and SelectedPlayer.Character:FindFirstChild("HumanoidRootPart") then
+            local rootPart = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+            if rootPart then
+                local targetPosition = SelectedPlayer.Character.HumanoidRootPart.Position
+                local tweenInfo = TweenInfo.new(1, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
+                local tween = TweenService:Create(rootPart, tweenInfo, {Position = targetPosition})
+                tween:Play()
+                print("Đã dịch chuyển đến:", SelectedPlayer.Name)
+            end
+        else
+            print("Không tìm thấy người chơi hoặc nhân vật không hợp lệ.")
+        end
+    end
+})
+
+-- **Cập nhật danh sách người chơi mỗi 10 giây**
+spawn(function()
+    while wait(10) do
+        PlayerDropdown:SetOptions(getPlayerList())
+    end
+end)
+
 -- **PVP Visual Tab: Kill Aura Button**
 PVPVisualTab:CreateButton({
     Name = "Kill Aura",
     Callback = function()
-        -- Chức năng Kill Aura sẽ được thêm vào đây
+        -- Kill Aura Script for Blox Fruits
+
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+local range = 20  -- Tầm xa của Kill Aura
+local attacking = false
+
+-- Tìm kiếm kẻ thù trong phạm vi
+local function getTarget()
+    local closestTarget = nil
+    local closestDistance = range  -- Khoảng cách để xem là mục tiêu
+
+    -- Duyệt qua tất cả các đối tượng trong workspace
+    for _, enemy in pairs(workspace:GetChildren()) do
+        if enemy:FindFirstChild("Humanoid") and enemy.Humanoid.Health > 0 and enemy ~= character then
+            local enemyHumanoidRoot = enemy:FindFirstChild("HumanoidRootPart")
+            if enemyHumanoidRoot then
+                local distance = (character.HumanoidRootPart.Position - enemyHumanoidRoot.Position).magnitude
+                if distance < closestDistance then
+                    closestDistance = distance
+                    closestTarget = enemy
+                end
+            end
+        end
+    end
+
+    return closestTarget
+end
+
+-- Hàm gây sát thương
+local function dealDamage(target)
+    local tool = LocalPlayer.Backpack:FindFirstChildOfClass("Tool")
+    if tool and tool:FindFirstChild("Activate") then
+        tool:Activate()
+        print("Tấn công mục tiêu:", target.Name)
+    end
+end
+
+-- Vòng lặp Kill Aura
+local function killAuraLoop()
+    while attacking do
+        wait(0.1)  -- Điều chỉnh tốc độ tấn công
+
+        -- Lấy mục tiêu gần nhất trong phạm vi
+        local target = getTarget()
+
+        if target then
+            -- Gây sát thương cho mục tiêu
+            dealDamage(target)
+        end
+    end
+end
+
+-- Kích hoạt Kill Aura
+LocalPlayer.InputBegan:Connect(function(input)
+    if input.KeyCode == Enum.KeyCode.E then  -- Bấm phím 'E' để bật/tắt Kill Aura
+        attacking = not attacking
+        if attacking then
+            print("Kill Aura: Đang bật")
+            killAuraLoop()
+        else
+            print("Kill Aura: Đã tắt")
+        end
+    end
+end)
+ây
     end
 })
 
@@ -191,7 +323,7 @@ PVPVisualTab:CreateToggle({
 -- **Settings Tab: Anti Ban-Kick Toggle**
 SettingsTab:CreateToggle({
     Name = "Anti Ban-Kick",
-    CurrentValue = false,
+    CurrentValue = truetrue,
     Flag = "AntiBanKick",
     Callback = function(Value)
         _G.AntiBanKick = Value

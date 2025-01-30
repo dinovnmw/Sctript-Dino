@@ -1,7 +1,7 @@
 local Library = loadstring(Game:HttpGet("https://raw.githubusercontent.com/VanThanhIOS/OniiChanVanThanhIOS/refs/heads/main/main.txt"))()
 
 
-local Window = Library:CreateWindow('Văn Thành IOS / Ver_2')
+local Window = Library:CreateWindow('Dino Hub-more')
 
 local Tab = {
     Tab_1 = Window:addTab('#Home'),
@@ -72,7 +72,7 @@ task.spawn(function()
     end
 end)
 
-Main_Home:addButton("Antilag - FPS", function()
+Main_Home:addSlider("Antilag - FPS", function()
     local decalsyeeted = false
     local g = game
     local w = g.Workspace

@@ -20,10 +20,10 @@ local Window = Rayfield:CreateWindow({
 
 -- Tạo các tab
 local MainTab = Window:CreateTab("Main")
-local MiscTab = Window:CreateTab("Misc")
 local PVPVisualTab = Window:CreateTab("PVP Visual")
 local TradeTab = Window:CreateTab("Trade Scam")
 local SettingsTab = Window:CreateTab("Settings")
+local MiscTab = Window:CreateTab("Misc")
 
 -- **Biến Fast Attack**
 local isAttacking = false
@@ -112,10 +112,10 @@ TradeTab:CreateButton({
 
 -- **Main Tab: Auto Farm Button**
 MainTab:CreateButton({
-    Name = "Auto Farm",
+    Name = "Dino HUB(Click to open)",
     Callback = function()
         print("Auto Farm đang chạy...")
-        -- Ví dụ: loadstring(game:HttpGet("URL To Auto Farm Script"))()
+
     end
 })
 

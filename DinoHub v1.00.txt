@@ -155,7 +155,66 @@ end)
 PVPVisualTab:CreateButton({
     Name = "Kill Aura",
     Callback = function()
-        -- Chức năng Kill Aura sẽ được thêm vào đây
+        -- Kill Aura Script for Blox Fruits
+
+_G.KillAura = true -- Bật/tắt Kill Aura (true = bật, false = tắt)
+local player = game.Players.LocalPlayer
+local range = 50 -- Phạm vi tấn công (có thể chỉnh lớn hơn hoặc nhỏ hơn tùy ý)
+
+-- Hàm tấn công kẻ địch xung quanh
+function KillAura()
+    while _G.KillAura do
+        for _, enemy in pairs(workspace.Enemies:GetChildren()) do
+            if enemy:FindFirstChild("HumanoidRootPart") and enemy.Humanoid.Health > 0 then
+                local distance = (player.Character.HumanoidRootPart.Position - enemy.HumanoidRootPart.Position).magnitude
+                if distance <= range then
+                    -- Đưa nhân vật đến gần kẻ địch (giữ khoảng cách an toàn 5m)
+                    player.Character.HumanoidRootPart.CFrame = enemy.HumanoidRootPart.CFrame * CFrame.new(0, 5, 0)
+                    
+                    -- Tấn công kẻ địch
+                    local tool = player.Character:FindFirstChildOfClass("Tool")
+                    if tool then
+                        tool:Activate() -- Kích hoạt đòn đánh bằng vũ khí
+                    else
+                        game:GetService("VirtualUser"):CaptureController()
+                        game:GetService("VirtualUser"):Button1Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame) -- Đòn đánh thường
+                    end
+                end
+            end
+        end
+        wait(0.1) -- Giảm lag
+    end
+end
+
+-- Khởi chạy Kill Aura
+KillAura()
+
+    end
+})
+MainTab:CreateButton({
+    Name = "Super fast attack",
+    Callback = function()
+        -- Fast Attack Script for Blox Fruits
+-- Speed: 0.000001s
+
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+local tool = character:FindFirstChildOfClass("Tool")
+
+-- Function to perform fast attack
+function fastAttack()
+    if tool and humanoid.Health > 0 then
+        tool:Activate()
+    end
+end
+
+-- Loop for ultra-fast attack
+while true do
+    fastAttack()
+    task.wait(0.000001) -- Attack speed
+end
+
     end
 })
 

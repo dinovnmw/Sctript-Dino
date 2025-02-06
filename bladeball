@@ -1,0 +1,184 @@
+-- Blade Ball Hack với Rayfield UI
+local Rayfield = loadstring(game:HttpGet("https://raw.githubusercontent.com/dinovnmw/Sctript-Dino/refs/heads/main/Rayfield"))()
+
+local Window = Rayfield:CreateWindow({
+    Name = "Blade Ball Hack | Rayfield UI",
+    LoadingTitle = "Đang tải menu...",
+    LoadingSubtitle = "Được phát triển bởi dinovnmw",
+    ConfigurationSaving = {
+       Enabled = true,
+       FolderName = "BladeBallHack",
+       FileName = "config"
+    },
+    KeySystem = false
+})
+
+local MainTab = Window:CreateTab("Main", "rbxassetid://7072717913")
+
+-- Hàm làm bóng đứng yên
+function FreezeBall()
+    for _, ball in pairs(workspace:GetChildren()) do
+        if ball:IsA("Part") and ball.Name == "Ball" then
+            local freeze = Instance.new("BodyVelocity", ball)
+            freeze.Velocity = Vector3.new(0, 0, 0) -- Giữ bóng đứng yên
+            freeze.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+
+            wait(5) -- Thời gian đóng băng (5 giây)
+
+            freeze:Destroy() -- Bỏ đóng băng
+            print("⚡ Bóng đã được giải phóng!")
+        end
+    end
+end
+
+-- Tạo nút bấm để làm bóng đứng yên
+MainTab:CreateButton({
+    Name = "Freeze Ball (Làm Bóng Đứng 5s)",
+    Callback = function()
+        FreezeBall()
+        print("❄️ Bóng đã bị đóng băng trong 5 giây!")
+    end
+})
+
+Rayfield:LoadConfiguration()
+
+-- Auto Parry (Tự động đỡ bóng)
+local autoParry = false
+MainTab:CreateToggle({
+    Name = "Auto Parry",
+    CurrentValue = false,
+    Flag = "AutoParry",
+    Callback = function(value)
+        autoParry = value
+        while autoParry do
+            for _, ball in pairs(workspace:GetChildren()) do
+                if ball:IsA("Part") and ball.Name == "Ball" then
+                    local distance = (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - ball.Position).magnitude
+                    if distance < 10 then
+                        game:GetService("VirtualInputManager"):SendKeyEvent(true, "E", false, game)
+                    end
+                end
+            end
+            wait(0.1)
+        end
+    end
+})
+
+-- Auto Dash (Tự động né tránh)
+local autoDash = false
+MainTab:CreateToggle({
+    Name = "Auto Dash",
+    CurrentValue = false,
+    Flag = "AutoDash",
+    Callback = function(value)
+        autoDash = value
+        while autoDash do
+            for _, ball in pairs(workspace:GetChildren()) do
+                if ball:IsA("Part") and ball.Name == "Ball" then
+                    local distance = (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - ball.Position).magnitude
+                    if distance < 15 then
+                        game:GetService("VirtualInputManager"):SendKeyEvent(true, "Q", false, game)
+                    end
+                end
+            end
+            wait(0.1)
+        end
+    end
+})
+
+-- Auto Jump (Nhảy tránh bóng)
+local autoJump = false
+MainTab:CreateToggle({
+    Name = "Auto Jump",
+    CurrentValue = false,
+    Flag = "AutoJump",
+    Callback = function(value)
+        autoJump = value
+        while autoJump do
+            for _, ball in pairs(workspace:GetChildren()) do
+                if ball:IsA("Part") and ball.Name == "Ball" then
+                    local distance = (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - ball.Position).magnitude
+                    if distance < 12 then
+                        game.Players.LocalPlayer.Character.Humanoid.Jump = true
+                    end
+                end
+            end
+            wait(0.1)
+        end
+    end
+})
+
+-- WalkSpeed (Tăng tốc độ di chuyển)
+local speedValue = 16
+MainTab:CreateSlider({
+    Name = "WalkSpeed",
+    Min = 16,
+    Max = 100,
+    CurrentValue = 16,
+    Flag = "WalkSpeed",
+    Callback = function(value)
+        speedValue = value
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = value
+    end
+})
+
+-- ESP (Hiển thị vị trí đối thủ)
+local espEnabled = false
+MainTab:CreateToggle({
+    Name = "ESP (Hiển thị người chơi)",
+    CurrentValue = false,
+    Flag = "ESP",
+    Callback = function(value)
+        espEnabled = value
+        while espEnabled do
+            for _, plr in pairs(game.Players:GetPlayers()) do
+                if plr ~= game.Players.LocalPlayer and plr.Character then
+                    if not plr.Character:FindFirstChild("ESP") then
+                        local highlight = Instance.new("Highlight")
+                        highlight.Name = "ESP"
+                        highlight.Parent = plr.Character
+                        highlight.FillColor = Color3.fromRGB(255, 0, 0)
+                        highlight.FillTransparency = 0.5
+                        highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
+                    end
+                end
+            end
+            wait(1)
+        end
+        for _, plr in pairs(game.Players:GetPlayers()) do
+            if plr.Character and plr.Character:FindFirstChild("ESP") then
+                plr.Character.ESP:Destroy()
+            end
+        end
+    end
+})
+
+-- Aimbot (Nhắm mục tiêu tự động)
+local aimbotEnabled = false
+MainTab:CreateToggle({
+    Name = "Aimbot (Nhắm mục tiêu)",
+    CurrentValue = false,
+    Flag = "Aimbot",
+    Callback = function(value)
+        aimbotEnabled = value
+        while aimbotEnabled do
+            local closestPlayer = nil
+            local shortestDistance = math.huge
+            for _, plr in pairs(game.Players:GetPlayers()) do
+                if plr ~= game.Players.LocalPlayer and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+                    local distance = (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - plr.Character.HumanoidRootPart.Position).magnitude
+                    if distance < shortestDistance then
+                        shortestDistance = distance
+                        closestPlayer = plr
+                    end
+                end
+            end
+            if closestPlayer then
+                workspace.CurrentCamera.CFrame = CFrame.new(workspace.CurrentCamera.CFrame.Position, closestPlayer.Character.Head.Position)
+            end
+            wait(0.1)
+        end
+    end
+})
+
+Rayfield:LoadConfiguration()

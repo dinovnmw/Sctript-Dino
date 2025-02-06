@@ -1,5 +1,5 @@
 -- Blade Ball Hack với Rayfield UI (Đã sửa lỗi không hiển thị Tab)
-local Rayfield = loadstring(game:HttpGet(""))()
+local Rayfield = loadstring(game:HttpGet("https://raw.githubusercontent.com/dinovnmw/Sctript-Dino/refs/heads/main/Rayfield"))()
 
 local Window = Rayfield:CreateWindow({
     Name = "Blade Ball Hack | Rayfield UI",

@@ -1,0 +1,97 @@
+-- Lệnh Admin cho Blox Fruits và mọi game, không cần quyền admin
+local function onChatMessage(player, message)
+    -- Kiểm tra xem người chơi có nhập lệnh không
+    if message:sub(1, 1) == "." then
+        local args = message:sub(2):split(" ")
+
+        -- Lệnh Reset Character
+        if args[1] == "reset" then
+            if player.Character then
+                player.Character:BreakJoints() -- Thực hiện reset nhân vật
+                game.ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer("Nhân vật của bạn đã được reset.", "All") -- Thông báo trong game
+            end
+        -- Lệnh Tp đến Player
+        elseif args[1] == "tp" and args[2] then
+            local targetPlayer = game.Players:FindFirstChild(args[2])
+            if targetPlayer and targetPlayer.Character then
+                local targetPos = targetPlayer.Character.HumanoidRootPart.Position
+                player.Character:MoveTo(targetPos)
+                game.ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer("Đã teleport đến " .. targetPlayer.Name, "All")
+            else
+                game.ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer("Không tìm thấy người chơi.", "All")
+            end
+        -- Lệnh Kick Player
+        elseif args[1] == "kick" and args[2] then
+            local targetPlayer = game.Players:FindFirstChild(args[2])
+            if targetPlayer then
+                targetPlayer:Kick("Bạn đã bị kick khỏi server!")
+                game.ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer(targetPlayer.Name .. " đã bị kick khỏi server.", "All")
+            else
+                game.ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer("Không tìm thấy người chơi để kick.", "All")
+            end
+        -- Lệnh God Mode (Bất tử)
+        elseif args[1] == "god" then
+            local character = player.Character
+            if character and character:FindFirstChild("Humanoid") then
+                local humanoid = character:FindFirstChild("Humanoid")
+                humanoid.Health = humanoid.MaxHealth -- Đặt sức khỏe tối đa
+                humanoid.MaxHealth = math.huge -- Thực hiện bất tử
+                game.ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer("God Mode đã bật.", "All")
+            end
+        -- Lệnh Invisible (Ẩn nhân vật)
+        elseif args[1] == "invisible" then
+            local character = player.Character
+            if character then
+                local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+                if humanoidRootPart then
+                    humanoidRootPart.Transparency = 1 -- Ẩn nhân vật
+                    for _, part in pairs(character:GetChildren()) do
+                        if part:IsA("Part") then
+                            part.Transparency = 1 -- Ẩn tất cả các bộ phận của nhân vật
+                        end
+                    end
+                    game.ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer("Nhân vật đã được ẩn.", "All")
+                end
+            end
+        -- Lệnh Uninvisible (Hiện lại nhân vật)
+        elseif args[1] == "uninvisible" then
+            local character = player.Character
+            if character then
+                local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+                if humanoidRootPart then
+                    humanoidRootPart.Transparency = 0 -- Hiện nhân vật
+                    for _, part in pairs(character:GetChildren()) do
+                        if part:IsA("Part") then
+                            part.Transparency = 0 -- Hiện lại tất cả các bộ phận của nhân vật
+                        end
+                    end
+                    game.ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer("Nhân vật đã được hiện lại.", "All")
+                end
+            end
+        -- Lệnh Fly (Bay)
+        elseif args[1] == "fly" then
+            local character = player.Character
+            if character and character:FindFirstChild("HumanoidRootPart") then
+                local bodyVelocity = Instance.new("BodyVelocity")
+                bodyVelocity.MaxForce = Vector3.new(10000, 10000, 10000) -- Tạo lực đủ mạnh để bay
+                bodyVelocity.Velocity = Vector3.new(0, 50, 0) -- Tạo lực đẩy lên
+                bodyVelocity.Parent = character.HumanoidRootPart
+                game.ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer("Bạn đang bay!", "All")
+            end
+        -- Lệnh Unfly (Dừng bay)
+        elseif args[1] == "unfly" then
+            local character = player.Character
+            if character and character:FindFirstChild("HumanoidRootPart") then
+                local bodyVelocity = character.HumanoidRootPart:FindFirstChildOfClass("BodyVelocity")
+                if bodyVelocity then
+                    bodyVelocity:Destroy() -- Xóa lực bay
+                end
+                game.ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer("Bạn đã ngừng bay.", "All")
+            end
+        else
+            game.ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer("Lệnh không hợp lệ. Thử các lệnh như: .reset, .tp, .kick, .god, .invisible, .fly.", "All")
+        end
+    end
+end
+
+game.Players.LocalPlayer.Chatted:Connect(onChatMessage)

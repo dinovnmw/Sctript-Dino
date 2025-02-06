@@ -1,5 +1,5 @@
--- Blade Ball Hack với Rayfield UI
-local Rayfield = loadstring(game:HttpGet("https://raw.githubusercontent.com/dinovnmw/Sctript-Dino/refs/heads/main/Rayfield"))()
+-- Blade Ball Hack với Rayfield UI (Đã sửa lỗi không hiển thị Tab)
+local Rayfield = loadstring(game:HttpGet(""))()
 
 local Window = Rayfield:CreateWindow({
     Name = "Blade Ball Hack | Rayfield UI",
@@ -13,9 +13,10 @@ local Window = Rayfield:CreateWindow({
     KeySystem = false
 })
 
-local MainTab = Window:CreateTab("Main", "rbxassetid://7072717913")
+-- ✅ Tạo Tab chính (Đã sửa lỗi không hiển thị)
+local MainTab = Window:CreateTab("Main Features", "rbxassetid://7072717913")
 
--- Hàm làm bóng đứng yên
+-- ✅ Hàm làm bóng đứng yên
 function FreezeBall()
     for _, ball in pairs(workspace:GetChildren()) do
         if ball:IsA("Part") and ball.Name == "Ball" then
@@ -24,14 +25,13 @@ function FreezeBall()
             freeze.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
 
             wait(5) -- Thời gian đóng băng (5 giây)
-
             freeze:Destroy() -- Bỏ đóng băng
             print("⚡ Bóng đã được giải phóng!")
         end
     end
 end
 
--- Tạo nút bấm để làm bóng đứng yên
+-- ✅ Nút làm bóng đứng yên
 MainTab:CreateButton({
     Name = "Freeze Ball (Làm Bóng Đứng 5s)",
     Callback = function()
@@ -40,9 +40,7 @@ MainTab:CreateButton({
     end
 })
 
-Rayfield:LoadConfiguration()
-
--- Auto Parry (Tự động đỡ bóng)
+-- ✅ Auto Parry (Tự động đỡ bóng)
 local autoParry = false
 MainTab:CreateToggle({
     Name = "Auto Parry",
@@ -64,7 +62,7 @@ MainTab:CreateToggle({
     end
 })
 
--- Auto Dash (Tự động né tránh)
+-- ✅ Auto Dash (Tự động né tránh)
 local autoDash = false
 MainTab:CreateToggle({
     Name = "Auto Dash",
@@ -86,7 +84,7 @@ MainTab:CreateToggle({
     end
 })
 
--- Auto Jump (Nhảy tránh bóng)
+-- ✅ Auto Jump (Nhảy tránh bóng)
 local autoJump = false
 MainTab:CreateToggle({
     Name = "Auto Jump",
@@ -108,7 +106,7 @@ MainTab:CreateToggle({
     end
 })
 
--- WalkSpeed (Tăng tốc độ di chuyển)
+-- ✅ WalkSpeed (Tăng tốc độ di chuyển)
 local speedValue = 16
 MainTab:CreateSlider({
     Name = "WalkSpeed",
@@ -122,7 +120,7 @@ MainTab:CreateSlider({
     end
 })
 
--- ESP (Hiển thị vị trí đối thủ)
+-- ✅ ESP (Hiển thị vị trí đối thủ)
 local espEnabled = false
 MainTab:CreateToggle({
     Name = "ESP (Hiển thị người chơi)",
@@ -153,7 +151,7 @@ MainTab:CreateToggle({
     end
 })
 
--- Aimbot (Nhắm mục tiêu tự động)
+-- ✅ Aimbot (Nhắm mục tiêu tự động)
 local aimbotEnabled = false
 MainTab:CreateToggle({
     Name = "Aimbot (Nhắm mục tiêu)",
@@ -181,4 +179,5 @@ MainTab:CreateToggle({
     end
 })
 
+-- ✅ Load cấu hình UI sau khi tạo xong Tab (Đã sửa lỗi)
 Rayfield:LoadConfiguration()

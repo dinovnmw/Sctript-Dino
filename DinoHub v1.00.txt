@@ -9,7 +9,7 @@ local Window = Rayfield:CreateWindow({
         Enabled = true,
         FileName = "DinoHubConfig"
     },
-    KeySystem = true,
+    KeySystem = false,
     KeySettings = {
         Title = "Dino Hub",
         Subtitle = "Nhập mã kích hoạt",
@@ -86,6 +86,27 @@ MainTab:CreateToggle({
         else
             print("⚪ Fast Attack: OFF")
         end
+    end,
+})
+MainTab:CreateToggle({
+    Name = "Auto Chest",
+    CurrentValue = false,
+    Callback = function(value)
+loadstring(game:HttpGet("https://raw.githubusercontent.com/dinovnmw/Sctript-Dino/refs/heads/main/autochest"))()
+    end,
+})
+PVPVisualTab:CreateToggle({
+    Name = "Hitbox 200 + Inf ",
+    CurrentValue = false,
+    Callback = function(value)
+loadstring(game:HttpGet("https://raw.githubusercontent.com/dinovnmw/Sctript-Dino/refs/heads/main/Hitbox%20%2B%20Inf%20Jump"))()
+    end,
+})
+PVPVisualTab:CreateToggle({
+    Name = "aimbot + safe mode + esp ",
+    CurrentValue = false,
+    Callback = function(value)
+loadstring(game:HttpGet("https://raw.githubusercontent.com/dinovnmw/Sctript-Dino/refs/heads/main/aimbot%20%2B%20safe%20mode%20%2B%20esp"))()
     end,
 })
 

@@ -24,8 +24,8 @@ game.StarterGui:SetCore("SendNotification", {
 
 task.wait(1)
 game.StarterGui:SetCore("SendNotification", {
-    Title = "Pu Ios Dz";
-    Text = "tiktok: @Huyios_isme";
+    Title = "DinoHub";
+    Text = "Hitbox 200 kích hoạt";
     Duration = 1;
 })
 

@@ -95,6 +95,13 @@ MainTab:CreateToggle({
 loadstring(game:HttpGet("https://raw.githubusercontent.com/dinovnmw/Sctript-Dino/refs/heads/main/autochest"))()
     end,
 })
+MainTab:CreateToggle({
+    Name = "Kaitun ",
+    CurrentValue = false,
+    Callback = function(value)
+loadstring(game:HttpGet("https://raw.githubusercontent.com/dinovnmw/Sctript-Dino/refs/heads/main/kaitun"))()
+    end,
+})
 PVPVisualTab:CreateToggle({
     Name = "Hitbox 200 + Inf ",
     CurrentValue = false,

@@ -264,14 +264,6 @@ TradeTab:CreateButton({
 
 -- **Main Tab: Auto Farm Button**
 MainTab:CreateButton({
-    Name = "Dino HUB V3(Pre)(Click to open)",
-    Callback = function()
-        print("DinoHub v3 đang chạy....")
- loadstring(game:HttpGet("https://raw.githubusercontent.com/dinovnmw/Sctript-Dino/refs/heads/main/pre"))()
-    end
-})
-MainTab:CreateButton({
-    Name = "Dino HUB V2(Sea 3ainTab:CreateButton({
     Name = "Super fast attack",
     Callback = function()
         -- Fast Attack Script for Blox Fruits

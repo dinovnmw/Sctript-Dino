@@ -114,14 +114,13 @@ end)
 
 local Home_Left = Tab.Tab_1:addSection()
 local Changelog = Home_Left:addMenu("Thông Tin")
-Changelog:addChangelog('Xin Chào Tất Cả Các Bạn ❤️')
-Changelog:addChangelog('Hello Everyone ❤️')
-Changelog:addChangelog('Menu : Văn Thành IOS' )
+Changelog:addChangelog('DinoHub V2')
+Changelog:addChangelog('Youtube: Dino Roblox')
+Changelog:addChangelog('Menu : DinoHub' )
 Changelog:addChangelog('Thông Tin Liên Hệ')
-Changelog:addChangelog('YTB: @thanhdzso1')
-Changelog:addChangelog('Tik Tok: @vanthanhisme_')
-Changelog:addChangelog('FB : @vanthanhisme')
-Changelog:addChangelog('Goodbye Everyone')
+Changelog:addChangelog('YTB: @dinoxspino')
+Changelog:addChangelog('Tik Tok: @dinoxspino')
+Changelog:addChangelog('Trải nghiệm vui vẻ')
 
 
 ----------------------------------------------------//----------------------------------------------------

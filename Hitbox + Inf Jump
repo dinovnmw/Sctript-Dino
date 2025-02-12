@@ -17,7 +17,7 @@ game:GetService("Players").LocalPlayer.Idled:Connect(function()
 end)
 
 game.StarterGui:SetCore("SendNotification", {
-    Title = "Pu Ios Dz";
+    Title = "DinoHub";
     Text = "Đã Bật hitbox";
     Duration = 1;
 })

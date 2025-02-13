@@ -2,7 +2,7 @@ local Rayfield = loadstring(game:HttpGet("https://raw.githubusercontent.com/dino
 
 -- Tạo cửa sổ chính
 local Window = Rayfield:CreateWindow({
-    Name = "Dino Hub(Premium)",
+    Name = "Dino Hub(Free)",
     LoadingTitle = "Dino Hub",
     LoadingSubtitle = "Đang tải...",
     ConfigurationSaving = {

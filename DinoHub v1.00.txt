@@ -96,9 +96,9 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/dinovnmw/Sctript-Dino
     end,
 })
 MainTab:CreateButton({
-    Name = "Kaitun ",
+    Name = "Kaitun(Pre) ",
     Callback = function(value)
-loadstring(game:HttpGet("https://raw.githubusercontent.com/dinovnmw/Sctript-Dino/refs/heads/main/kaitun"))()
+
     end,
 })
 PVPVisualTab:CreateToggle({

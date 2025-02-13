@@ -1,0 +1,440 @@
+local Rayfield = loadstring(game:HttpGet("https://raw.githubusercontent.com/dinovnmw/Sctript-Dino/main/Rayfield"))()
+
+-- Tạo cửa sổ chính
+local Window = Rayfield:CreateWindow({
+    Name = "Dino Hub(Premium))",
+    LoadingTitle = "Dino Hub",
+    LoadingSubtitle = "Đang tải...",
+    ConfigurationSaving = {
+        Enabled = true,
+        FileName = "DinoHubConfig"
+    },
+    KeySystem = false,
+    KeySettings = {
+        Title = "Dino Hub",
+        Subtitle = "Nhập mã kích hoạt",
+        Note = "Don’t have key? — Discord: https://discord.gg/MtqQS4PSYQ",
+        Key = "Dino999"
+    }
+})
+
+-- Tạo các tab
+local MainTab = Window:CreateTab("Main")
+local PVPVisualTab = Window:CreateTab("PVP Visual")
+local TeleportTab = Window:CreateTab("Teleport")
+local TradeTab = Window:CreateTab("Trade Scam")
+local SettingsTab = Window:CreateTab("Settings")
+local MiscTab = Window:CreateTab("Misc")
+-- **Biến Fast Attack**
+local isAttacking = false
+local attackSpeed = 0.1 -- Tốc độ tấn công mặc định
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+--tele
+local TweenService = game:GetService("TweenService")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local SelectedPlayer = nil
+
+-- **Cập nhật danh sách người chơi**
+local function getPlayerList()
+    local playerNames = {}
+    for _, v in pairs(Players:GetPlayers()) do
+        if v ~= LocalPlayer then
+            table.insert(playerNames, v.Name)
+        end
+    end
+    return playerNames
+end
+
+-- **Lấy vũ khí hiện tại**
+local function getEquippedTool()
+    for _, tool in pairs(character:GetChildren()) do
+        if tool:IsA("Tool") then
+            return tool
+        end
+    end
+    return nil
+end
+
+-- **Kích hoạt tấn công**
+local function attack()
+    local tool = getEquippedTool()
+    if tool and tool:FindFirstChild("Activate") then
+        tool:Activate()
+    end
+end
+
+-- **Vòng lặp Fast Attack (Anti-Ban)**
+local function fastAttackLoop()
+    while isAttacking do
+        attack()
+        wait(attackSpeed + math.random() * 0.05) -- Thêm độ trễ ngẫu nhiên để tránh bị phát hiện
+    end
+end
+
+-- **Main Tab: Fast Attack Toggle**
+MainTab:CreateToggle({
+    Name = "Fast Attack (Anti-Ban)",
+    CurrentValue = false,
+    Flag = "FastAttackToggle",
+    Callback = function(value)
+        isAttacking = value
+        if isAttacking then
+            print("🔴 Fast Attack: ON")
+            fastAttackLoop()
+        else
+            print("⚪ Fast Attack: OFF")
+        end
+    end,
+})
+MainTab:CreateToggle({
+    Name = "Auto Chest",
+    CurrentValue = false,
+    Callback = function(value)
+loadstring(game:HttpGet("https://raw.githubusercontent.com/dinovnmw/Sctript-Dino/refs/heads/main/autochest"))()
+    end,
+})
+MainTab:CreateButton({
+    Name = "Kaitun ",
+    Callback = function(value)
+loadstring(game:HttpGet("https://raw.githubusercontent.com/dinovnmw/Sctript-Dino/refs/heads/main/kaitun"))()
+    end,
+})
+PVPVisualTab:CreateToggle({
+    Name = "Hitbox 200 + Inf ",
+    CurrentValue = false,
+    Callback = function(value)
+loadstring(game:HttpGet("https://raw.githubusercontent.com/dinovnmw/Sctript-Dino/refs/heads/main/Hitbox%20%2B%20Inf%20Jump"))()
+    end,
+})
+PVPVisualTab:CreateToggle({
+    Name = "aimbot + safe mode + esp ",
+    CurrentValue = false,
+    Callback = function(value)
+loadstring(game:HttpGet("https://raw.githubusercontent.com/dinovnmw/Sctript-Dino/refs/heads/main/aimbot%20%2B%20safe%20mode%20%2B%20esp"))()
+    end,
+})
+
+-- **Main Tab: Fast Attack Speed Slider**
+MainTab:CreateSlider({
+    Name = "Fast Attack Speed",
+    Range = {0.005, 0.3}, -- Giới hạn tốc độ (chậm nhất 0.3s, nhanh nhất 0.005s)
+    Increment = 0.01,
+    CurrentValue = 0.1,
+    Flag = "AttackSpeedSlider",
+    Callback = function(value)
+        attackSpeed = value
+        print("⚙ Fast Attack Speed:", value)
+    end,
+})
+
+--
+-- **Cập nhật danh sách người chơi**
+local function getPlayerList()
+    local playerNames = {}
+    for _, v in pairs(Players:GetPlayers()) do
+        if v ~= LocalPlayer then
+            table.insert(playerNames, v.Name)
+        end
+    end
+    return playerNames
+end
+
+-- **Dropdown chọn người chơi**
+local PlayerDropdown = TeleportTab:CreateDropdown({
+    Name = "Chọn Người Chơi",
+    Options = getPlayerList(),
+    CurrentOption = "",
+    Flag = "SelectedPlayer",
+    Callback = function(value)
+        SelectedPlayer = Players:FindFirstChild(value)
+    end
+})
+
+-- **Button Teleport**
+TeleportTab:CreateButton({
+    Name = "Teleport",
+    Callback = function()
+        if SelectedPlayer and SelectedPlayer.Character and SelectedPlayer.Character:FindFirstChild("HumanoidRootPart") then
+            local rootPart = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+            if rootPart then
+                local targetPosition = SelectedPlayer.Character.HumanoidRootPart.Position
+                local tweenInfo = TweenInfo.new(1, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
+                local tween = TweenService:Create(rootPart, tweenInfo, {Position = targetPosition})
+                tween:Play()
+                print("Đã dịch chuyển đến:", SelectedPlayer.Name)
+            end
+        else
+            print("Không tìm thấy người chơi hoặc nhân vật không hợp lệ.")
+        end
+    end
+})
+
+-- **Cập nhật danh sách người chơi mỗi 10 giây**
+spawn(function()
+    while wait(10) do
+        PlayerDropdown:SetOptions(getPlayerList())
+    end
+end)
+
+-- **PVP Visual Tab: Kill Aura Button**
+PVPVisualTab:CreateButton({
+    Name = "Kill Aura",
+    Callback = function()
+        -- Kill Aura Script for Blox Fruits
+
+_G.KillAura = true -- Bật/tắt Kill Aura (true = bật, false = tắt)
+local player = game.Players.LocalPlayer
+local range = 50 -- Phạm vi tấn công (có thể chỉnh lớn hơn hoặc nhỏ hơn tùy ý)
+
+-- Hàm tấn công kẻ địch xung quanh
+function KillAura()
+    while _G.KillAura do
+        for _, enemy in pairs(workspace.Enemies:GetChildren()) do
+            if enemy:FindFirstChild("HumanoidRootPart") and enemy.Humanoid.Health > 0 then
+                local distance = (player.Character.HumanoidRootPart.Position - enemy.HumanoidRootPart.Position).magnitude
+                if distance <= range then
+                    -- Đưa nhân vật đến gần kẻ địch (giữ khoảng cách an toàn 5m)
+                    player.Character.HumanoidRootPart.CFrame = enemy.HumanoidRootPart.CFrame * CFrame.new(0, 5, 0)
+                    
+                    -- Tấn công kẻ địch
+                    local tool = player.Character:FindFirstChildOfClass("Tool")
+                    if tool then
+                        tool:Activate() -- Kích hoạt đòn đánh bằng vũ khí
+                    else
+                        game:GetService("VirtualUser"):CaptureController()
+                        game:GetService("VirtualUser"):Button1Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame) -- Đòn đánh thường
+                    end
+                end
+            end
+        end
+        wait(0.1) -- Giảm lag
+    end
+end
+
+-- Khởi chạy Kill Aura
+KillAura()
+
+    end
+})
+MainTab:CreateButton({
+    Name = "Super fast attack",
+    Callback = function()
+        -- Fast Attack Script for Blox Fruits
+-- Speed: 0.000001s
+
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+local tool = character:FindFirstChildOfClass("Tool")
+
+-- Function to perform fast attack
+function fastAttack()
+    if tool and humanoid.Health > 0 then
+        tool:Activate()
+    end
+end
+
+-- Loop for ultra-fast attack
+while true do
+    fastAttack()
+    task.wait(0.000001) -- Attack speed
+end
+
+    end
+})
+
+-- **Trade Tab: Frozen Server 9s Button**
+TradeTab:CreateButton({
+    Name = "Frozen Server 9s🥶",
+    Callback = function()
+        print("Server sẽ đứng trong 8 giây...")
+        local start = os.clock()
+        while os.clock() - start < 8 do
+            local x = 1
+            for i = 1, 1e7 do
+                x = x * i % 1e6
+            end
+        end
+        print("Đã hoàn thành! Server trở lại bình thường.")
+    end
+})
+
+-- **Main Tab: Auto Farm Button**
+MainTab:CreateButton({
+    Name = "Super fast attack",
+    Callback = function()
+        -- Fast Attack Script for Blox Fruits
+-- Speed: 0.000001s
+
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+local tool = character:FindFirstChildOfClass("Tool")
+
+-- Function to perform fast attack
+function fastAttack()
+    if tool and humanoid.Health > 0 then
+        tool:Activate()
+    end
+end
+
+-- Loop for ultra-fast attack
+while true do
+    fastAttack()
+    task.wait(0.000001) -- Attack speed
+end
+
+    end
+})
+
+-- **Trade Tab: Frozen Server 9s Button**
+TradeTab:CreateButton({
+    Name = "Frozen Server 9s🥶",
+    Callback = function()
+        print("Server sẽ đứng trong 8 giây...")
+        local start = os.clock()
+        while os.clock() - start < 8 do
+            local x = 1
+            for i = 1, 1e7 do
+                x = x * i % 1e6
+            end
+        end
+        print("Đã hoàn thành! Server trở lại bình thường.")
+    end
+})
+
+-- **Main Tab: Auto Farm Button**
+MainTab:CreateButton({
+    Name = "Dino HUB V3(Pre)(Paid)",
+    Callback = function()
+        print("DinoHub v3 đang chạy....")
+ loadstring(game:HttpGet("https://raw.githubusercontent.com/dinovnmw/Sctript-Dino/refs/heads/main/key"))()
+    end
+})
+MainTab:CreateButton({
+    Name = "Dino HUB V2(Sea 3❌)",
+    Callback = function()
+        print("DinoHub v2 đang chạy...")
+ loadstring(game:HttpGet("https://raw.githubusercontent.com/dinovnmw/Sctript-Dino/refs/heads/main/oniichan.txt"))()
+    end
+})
+MainTab:CreateButton({
+    Name = "Dino HUB V1(Click to open)",
+    Callback = function()
+        print("DinoHub v1 đang chạy...")
+ loadstring(game:HttpGet("https://raw.githubusercontent.com/dinovnmw/Sctript-Dino/refs/heads/main/luxucuthanh.txt"))()
+    end
+})
+
+-- **Misc Tab: Fix Lag Button**
+MiscTab:CreateButton({
+    Name = "Fix Lag",
+    Callback = function()
+        repeat wait(1) until game:IsLoaded()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/dinovnmw/Sctript-Dino/main/Fix%20lag%2BHAki%20QUan%20s%C3%A1t"))()
+    end
+})
+
+-- **Misc Tab: Walk Speed Slider**
+MiscTab:CreateSlider({
+    Name = "Walk Speed",
+    Range = {1600, 100000}, -- Giới hạn tốc độ đi bộ (mặc định là 16)
+    Increment = 1,
+    Suffix = "Speed",
+    CurrentValue = 1600,
+    Flag = "WalkSpeed",
+    Callback = function(Value)
+        local character = player.Character or player.CharacterAdded:Wait()
+        if character:FindFirstChild("Humanoid") then
+            character.Humanoid.WalkSpeed = Value
+            print("Walk Speed đã thay đổi: " .. Value)
+        end
+    end
+})
+
+-- **Misc Tab: Max Health Slider**
+MiscTab:CreateSlider({
+    Name = "Max Health",
+    Range = {100, 999999}, -- Giới hạn máu tối đa
+    Increment = 100,
+    Suffix = "Health",
+    CurrentValue = 1000,
+    Flag = "MaxHealth",
+    Callback = function(Value)
+        local character = player.Character or player.CharacterAdded:Wait()
+        if character:FindFirstChild("Humanoid") then
+            character.Humanoid.MaxHealth = Value
+            character.Humanoid.Health = Value -- Hồi đầy máu
+            print("Max Health đã thay đổi: " .. Value)
+        end
+    end
+})
+
+-- **PVP Visual Tab: Infinite Heal Toggle**
+PVPVisualTab:CreateToggle({
+    Name = "Infinite Heal",
+    CurrentValue = false,
+    Flag = "InfiniteHeal",
+    Callback = function(Value)
+        _G.InfiniteHeal = Value
+        while _G.InfiniteHeal do
+            wait(0.1)
+            local character = player.Character or player.CharacterAdded:Wait()
+            if character:FindFirstChild("Humanoid") then
+                character.Humanoid.Health = character.Humanoid.MaxHealth
+                print("Hồi máu liên tục: Đang bật.")
+            end
+        end
+    end
+})
+
+-- **Settings Tab: Anti Ban-Kick Toggle**
+SettingsTab:CreateToggle({
+    Name = "Anti Ban-Kick",
+    CurrentValue = false,
+    Flag = "AntiBanKick",
+    Callback = function(Value)
+        _G.AntiBanKick = Value
+        if _G.AntiBanKick then
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/dinovnmw/Sctript-Dino/main/Anti%20ban"))()
+            print("Anti Ban-Kick đã bật.")
+        else
+            print("Anti Ban-Kick đã tắt.")
+        end
+    end
+})
+
+-- **Settings Tab: Unlock FPS Button**
+SettingsTab:CreateButton({
+    Name = "Unlock FPS",
+    Callback = function()
+        if setfpscap then
+            setfpscap(999)
+            print("Đã mở giới hạn FPS!")
+        else
+            print("Chức năng không hỗ trợ trên thiết bị này!")
+        end
+    end
+})
+
+-- **Settings Tab: Reset Character Button**
+SettingsTab:CreateButton({
+    Name = "Reset Character",
+    Callback = function()
+        if player.Character then
+            player.Character:BreakJoints()
+            print("Nhân vật đã được reset!")
+        end
+    end
+})
+
+-- **Thông báo khi giao diện đã được tải**
+Rayfield:Notify({
+    Title = "Dino Hub",
+    Content = "Giao diện đã được tải thành công.",
+    Duration = 8
+})
+
+print("Dino Hub đã tải thành công!")

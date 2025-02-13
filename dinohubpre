@@ -2,7 +2,7 @@ local Rayfield = loadstring(game:HttpGet("https://raw.githubusercontent.com/dino
 
 -- Tạo cửa sổ chính
 local Window = Rayfield:CreateWindow({
-    Name = "Dino Hub(Premium))",
+    Name = "Dino Hub(Premium)",
     LoadingTitle = "Dino Hub",
     LoadingSubtitle = "Đang tải...",
     ConfigurationSaving = {
@@ -266,6 +266,13 @@ end
 
 
 -- **Main Tab: Auto Farm Button**
+MainTab:CreateButton({
+    Name = "Find fruits",
+    Callback = function()
+        print("DinoHub v3 đang chạy....")
+ loadstring(game:HttpGet("https://raw.githubusercontent.com/dinovnmw/Sctript-Dino/refs/heads/main/fidnfruit"))()
+    end
+})
 MainTab:CreateButton({
     Name = "DinoMenu(Pre)",
     Callback = function()

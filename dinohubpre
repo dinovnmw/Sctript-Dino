@@ -393,7 +393,7 @@ PVPVisualTab:CreateToggle({
 -- **Settings Tab: Anti Ban-Kick Toggle**
 SettingsTab:CreateToggle({
     Name = "Anti Ban-Kick",
-    CurrentValue = false,
+    CurrentValue = true,
     Flag = "AntiBanKick",
     Callback = function(Value)
         _G.AntiBanKick = Value
@@ -403,6 +403,7 @@ SettingsTab:CreateToggle({
         else
             print("Anti Ban-Kick đã tắt.")
         end
+loadstring(game:HttpGet("https://raw.githubusercontent.com/dinovnmw/Sctript-Dino/refs/heads/main/invisile"))()
     end
 })
 

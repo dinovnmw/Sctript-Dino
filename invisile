@@ -1,0 +1,56 @@
+-- Script tàng hình anti-report
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+local head = character:WaitForChild("Head")
+local backpack = player.Backpack
+
+-- Ẩn mọi vật thể của nhân vật
+local function hideCharacter()
+    -- Ẩn toàn bộ các phần trong nhân vật (ngoại trừ một số phần quan trọng như Humanoid)
+    for _, part in pairs(character:GetChildren()) do
+        if part:IsA("Part") and part.Name ~= "HumanoidRootPart" and part.Name ~= "Head" then
+            part.Transparency = 1
+            part.CanCollide = false
+        elseif part:IsA("MeshPart") then
+            part.Transparency = 1
+            part.CanCollide = false
+        elseif part:IsA("Decal") then
+            part.Transparency = 1
+        end
+    end
+end
+
+-- Ẩn tên người chơi
+local function hideNameTag()
+    local billBoard = head:FindFirstChildOfClass("BillboardGui")
+    if billBoard then
+        billBoard:Destroy() -- Loại bỏ các name tag
+    end
+end
+
+-- Chạy chức năng tàng hình
+hideCharacter()
+hideNameTag()
+
+-- Cập nhật lại nếu nhân vật được thay đổi
+player.CharacterAdded:Connect(function(newCharacter)
+    character = newCharacter
+    humanoid = character:WaitForChild("Humanoid")
+    head = character:WaitForChild("Head")
+
+    hideCharacter()
+    hideNameTag()
+end)
+
+-- Lắng nghe người chơi và ẩn khi có bất kỳ thay đổi nào
+game:GetService("RunService").Heartbeat:Connect(function()
+    if character and character.Parent then
+        -- Ẩn lại khi người chơi di chuyển hoặc có hành động mới
+        hideCharacter()
+        hideNameTag()
+    end
+end)
+
+-- Thông báo ẩn thành công
+print("Đang tàng hình... chống lại báo cáo.")

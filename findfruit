@@ -1,7 +1,4 @@
----deobf By Adz
----deobf By Adz
----deobf By Adz
----deobf By Adz
+
 function setTeam(teamName)
     local args = {
         [1] = "SetTeam",

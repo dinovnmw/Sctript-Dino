@@ -6,14 +6,16 @@ local RunService = game:GetService("RunService")
 local VirtualUser = game:GetService("VirtualUser")
 local Stats = game:GetService("Stats")
 local Player = Players.LocalPlayer
+local Workspace = game:GetService("Workspace")
+local TeleportService = game:GetService("TeleportService")
 
--- Anti-AFK
+-- Anti-AFK: Prevent Idle Kick
 Player.Idled:Connect(function()
     VirtualUser:CaptureController()
     VirtualUser:ClickButton2(Vector2.new(0, 0))
 end)
 
--- Bypass Auto Disconnect
+-- Bypass Auto Disconnect and Prevent Kick
 local function preventKick()
     local mt = getrawmetatable(game)
     setreadonly(mt, false)
@@ -23,28 +25,35 @@ local function preventKick()
         local args = {...}
         local method = getnamecallmethod()
 
+        -- Intercept Kick method to block it
         if tostring(method) == "Kick" then
-            return nil -- Chặn lệnh Kick
+            return nil
         end
+
+        -- Block any force disconnect commands
+        if tostring(method) == "ForceDisconnect" then
+            return nil
+        end
+        
         return original(self, unpack(args))
     end)
 end
 preventKick()
 
--- Auto Reconnect
+-- Auto Reconnect: Automatic Reconnection After Disconnection
 local function autoReconnect()
     local isReconnecting = false
     game.CoreGui.ChildAdded:Connect(function(child)
         if child.Name == "ErrorPrompt" and not isReconnecting then
             isReconnecting = true
-            wait(2) -- Thử kết nối lại sau 2 giây
-            game:GetService("TeleportService"):Teleport(game.PlaceId)
+            wait(2) -- Wait before reconnecting
+            TeleportService:Teleport(game.PlaceId)
         end
     end)
 end
 autoReconnect()
 
--- Anti-Report
+-- Anti-Report: Prevent Abuse Reporting
 local function antiReport()
     local mt = getrawmetatable(game)
     setreadonly(mt, false)
@@ -54,24 +63,61 @@ local function antiReport()
         local args = {...}
         local method = getnamecallmethod()
 
+        -- Block Report Abuse message sending via FireServer
         if tostring(self) == "SayMessageRequest" and tostring(method) == "FireServer" then
-            return nil -- Chặn gửi tin nhắn
+            return nil
         end
+        
         return originalChat(self, unpack(args))
     end)
 end
 antiReport()
 
--- Ping Stabilizer
+-- Combat Anti-Detection (For Blox Fruits)
+local function antiCombatDetection()
+    local mt = getrawmetatable(game)
+    setreadonly(mt, false)
+
+    local originalNamecall = mt.__namecall
+    mt.__namecall = newcclosure(function(self, ...)
+        local args = {...}
+        local method = getnamecallmethod()
+
+        -- Prevent detection for combat actions like using fruit abilities
+        if tostring(method) == "FireServer" and tostring(self) == "ActivateAbility" then
+            return nil
+        end
+
+        return originalNamecall(self, unpack(args))
+    end)
+end
+antiCombatDetection()
+
+-- Teleportation Anti-Detection (For Blox Fruits)
+local function antiTeleportDetection()
+    local mt = getrawmetatable(game)
+    setreadonly(mt, false)
+
+    local originalIndex = mt.__index
+    mt.__index = newcclosure(function(self, key)
+        if key == "TeleportTo" then
+            return function() end -- Block teleport detection
+        end
+        return originalIndex(self, key)
+    end)
+end
+antiTeleportDetection()
+
+-- Ping Stabilizer: Reduces Lag by Adjusting the Environment
 local function stabilizePing()
     local lastOptimization = tick()
     RunService.Stepped:Connect(function()
-        setfpscap(60) -- Cố định FPS
+        setfpscap(60) -- Lock FPS at 60 to prevent lag
         if Stats.Network.ServerStatsItem["Data Ping"]:GetValue() > 300 and (tick() - lastOptimization > 5) then
-            lastOptimization = tick() -- Chỉ thực hiện mỗi 5 giây
-            for _, v in ipairs(workspace:GetDescendants()) do
+            lastOptimization = tick() -- Perform optimization every 5 seconds
+            for _, v in ipairs(Workspace:GetDescendants()) do
                 if v:IsA("BasePart") then
-                    v.Material = Enum.Material.SmoothPlastic
+                    v.Material = Enum.Material.SmoothPlastic -- Optimize material for better performance
                 end
             end
         end
@@ -79,7 +125,7 @@ local function stabilizePing()
 end
 stabilizePing()
 
--- Hide Exploits
+-- Hide Exploits: Prevent Detection of Exploits
 local function hideExploits()
     local mt = getrawmetatable(game)
     setreadonly(mt, false)
@@ -87,25 +133,33 @@ local function hideExploits()
     local originalIndex = mt.__index
     mt.__index = newcclosure(function(self, key)
         if key == "Kick" then
-            return function() end -- Chặn Kick function
+            return function() end -- Block the Kick function to prevent bans
         end
         return originalIndex(self, key)
     end)
 end
 hideExploits()
 
--- Advanced Anti-Detection
+-- Advanced Anti-Detection: Block Reporting and Detection
 local function advancedAntiDetection()
     local oldNameCall = nil
     oldNameCall = hookmetamethod(game, "__namecall", function(self, ...)
         local args = {...}
         local method = getnamecallmethod()
+        
+        -- Block FireServer for ReportAbuse method
         if method == "FireServer" and tostring(self) == "ReportAbuse" then
-            return nil -- Chặn lệnh Report
+            return nil -- Block abuse report
         end
+        
+        -- Block any suspicious method calls (such as Kick)
+        if method == "Kick" then
+            return nil
+        end
+
         return oldNameCall(self, ...)
     end)
 end
 advancedAntiDetection()
 
-print("[Anti-Ban]: Script initialized successfully!")
+print("[Anti-Ban for Blox Fruits]: Script initialized successfully!")

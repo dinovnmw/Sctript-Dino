@@ -270,7 +270,7 @@ MainTab:CreateButton({
     Name = "Dino HUB V3(Pre)(Paid)",
     Callback = function()
         print("DinoHub v3 đang chạy....")
- loadstring(game:HttpGet("https://raw.githubusercontent.com/dinovnmw/Sctript-Dino/refs/heads/main/key"))()
+ loadstring(game:HttpGet("https://raw.githubusercontent.com/dinovnmw/Sctript-Dino/refs/heads/main/pre"))()
     end
 })
 MainTab:CreateButton({

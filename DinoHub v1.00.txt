@@ -307,10 +307,9 @@ TradeTab:CreateButton({
 
 -- **Main Tab: Auto Farm Button**
 MainTab:CreateButton({
-    Name = "Dino HUB V3(Pre)(Paid)",
+    Name = "Dino HUB V3(Premium-Can't use)",
     Callback = function()
-        print("DinoHub v3 đang chạy....")
- loadstring(game:HttpGet("https://raw.githubusercontent.com/dinovnmw/Sctript-Dino/refs/heads/main/key"))()
+        print("Can't use đang chạy....")
     end
 })
 MainTab:CreateButton({

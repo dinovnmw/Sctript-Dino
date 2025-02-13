@@ -218,36 +218,10 @@ KillAura()
 
     end
 })
-MainTab:CreateButton({
-    Name = "Super fast attack",
-    Callback = function()
-        -- Fast Attack Script for Blox Fruits
--- Speed: 0.000001s
-
-local player = game.Players.LocalPlayer
-local character = player.Character or player.CharacterAdded:Wait()
-local humanoid = character:WaitForChild("Humanoid")
-local tool = character:FindFirstChildOfClass("Tool")
-
--- Function to perform fast attack
-function fastAttack()
-    if tool and humanoid.Health > 0 then
-        tool:Activate()
-    end
-end
-
--- Loop for ultra-fast attack
-while true do
-    fastAttack()
-    task.wait(0.000001) -- Attack speed
-end
-
-    end
-})
 
 -- **Trade Tab: Frozen Server 9s Button**
 TradeTab:CreateButton({
-    Name = "Frozen Server 9s🥶",
+    Name = "Frozen Server 9s🥶(Troll:))",
     Callback = function()
         print("Server sẽ đứng trong 8 giây...")
         local start = os.clock()
@@ -289,21 +263,7 @@ end
     end
 })
 
--- **Trade Tab: Frozen Server 9s Button**
-TradeTab:CreateButton({
-    Name = "Frozen Server 9s🥶",
-    Callback = function()
-        print("Server sẽ đứng trong 8 giây...")
-        local start = os.clock()
-        while os.clock() - start < 8 do
-            local x = 1
-            for i = 1, 1e7 do
-                x = x * i % 1e6
-            end
-        end
-        print("Đã hoàn thành! Server trở lại bình thường.")
-    end
-})
+
 
 -- **Main Tab: Auto Farm Button**
 MainTab:CreateButton({

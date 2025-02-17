@@ -153,23 +153,14 @@ local PlayerDropdown = TeleportTab:CreateDropdown({
 })
 
 -- **Button Teleport**
+
 TeleportTab:CreateButton({
     Name = "Teleport",
     Callback = function()
-        if SelectedPlayer and SelectedPlayer.Character and SelectedPlayer.Character:FindFirstChild("HumanoidRootPart") then
-            local rootPart = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-            if rootPart then
-                local targetPosition = SelectedPlayer.Character.HumanoidRootPart.Position
-                local tweenInfo = TweenInfo.new(1, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
-                local tween = TweenService:Create(rootPart, tweenInfo, {Position = targetPosition})
-                tween:Play()
-                print("Đã dịch chuyển đến:", SelectedPlayer.Name)
-            end
-        else
-            print("Không tìm thấy người chơi hoặc nhân vật không hợp lệ.")
-        end
+       loadstring(game:HttpGet("https://raw.githubusercontent.com/dinovnmw/Sctript-Dino/refs/heads/main/tp"))()
     end
 })
+
 
 -- **Cập nhật danh sách người chơi mỗi 10 giây**
 spawn(function()

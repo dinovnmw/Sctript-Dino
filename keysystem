@@ -1,0 +1,107 @@
+local HttpService = game:GetService("HttpService")
+local UserInputService = game:GetService("UserInputService")
+local Clipboard = setclipboard or toclipboard or (Clipboard and Clipboard.set)
+
+local KeySystemURL = "http://keydino.x10.mx/"
+local DiscordLink = "https://discord.gg/np69n73DQm"
+
+local ExecutorUI = Instance.new("ScreenGui")
+local MainFrame = Instance.new("Frame")
+local GetKeyButton = Instance.new("TextButton")
+local CheckKeyButton = Instance.new("TextButton")
+local KeyInput = Instance.new("TextBox")
+local StatusLabel = Instance.new("TextLabel")
+local CloseButton = Instance.new("TextButton")
+local TitleLabel = Instance.new("TextLabel")
+
+ExecutorUI.Parent = game.CoreGui
+
+MainFrame.Size = UDim2.new(0, 350, 0, 250)
+MainFrame.Position = UDim2.new(0.5, -175, 0.5, -125)
+MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+MainFrame.BorderSizePixel = 2
+MainFrame.BorderColor3 = Color3.fromRGB(255, 255, 255)
+MainFrame.Active = true
+MainFrame.Draggable = true
+MainFrame.Parent = ExecutorUI
+
+TitleLabel.Size = UDim2.new(1, 0, 0.15, 0)
+TitleLabel.Position = UDim2.new(0, 0, 0, 0)
+TitleLabel.Text = "Dino Executor"
+TitleLabel.TextSize = 18
+TitleLabel.Font = Enum.Font.SourceSansBold
+TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+TitleLabel.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+TitleLabel.Parent = MainFrame
+
+KeyInput.Size = UDim2.new(0.8, 0, 0.15, 0)
+KeyInput.Position = UDim2.new(0.1, 0, 0.2, 0)
+KeyInput.PlaceholderText = "Enter Key Here"
+KeyInput.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+KeyInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+KeyInput.Parent = MainFrame
+
+GetKeyButton.Size = UDim2.new(0.8, 0, 0.15, 0)
+GetKeyButton.Position = UDim2.new(0.1, 0, 0.4, 0)
+GetKeyButton.Text = "Get Key"
+GetKeyButton.BackgroundColor3 = Color3.fromRGB(0, 120, 215)
+GetKeyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+GetKeyButton.Parent = MainFrame
+
+CheckKeyButton.Size = UDim2.new(0.8, 0, 0.15, 0)
+CheckKeyButton.Position = UDim2.new(0.1, 0, 0.6, 0)
+CheckKeyButton.Text = "Check Key"
+CheckKeyButton.BackgroundColor3 = Color3.fromRGB(0, 200, 80)
+CheckKeyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+CheckKeyButton.Parent = MainFrame
+
+StatusLabel.Size = UDim2.new(0.8, 0, 0.1, 0)
+StatusLabel.Position = UDim2.new(0.1, 0, 0.8, 0)
+StatusLabel.Text = "Status: Waiting"
+StatusLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+StatusLabel.BackgroundTransparency = 1
+StatusLabel.Parent = MainFrame
+
+CloseButton.Size = UDim2.new(0.15, 0, 0.15, 0)
+CloseButton.Position = UDim2.new(0.85, 0, 0, 0)
+CloseButton.Text = "X"
+CloseButton.TextSize = 16
+CloseButton.Font = Enum.Font.SourceSansBold
+CloseButton.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
+CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+CloseButton.Parent = MainFrame
+
+CloseButton.MouseButton1Click:Connect(function()
+    ExecutorUI:Destroy()
+end)
+
+GetKeyButton.MouseButton1Click:Connect(function()
+    if Clipboard then
+        Clipboard(DiscordLink)
+        StatusLabel.Text = "Copied Discord Link!"
+    else
+        StatusLabel.Text = "Clipboard not supported!"
+    end
+end)
+
+CheckKeyButton.MouseButton1Click:Connect(function()
+    local key = KeyInput.Text
+    if key == "" then
+        StatusLabel.Text = "Please enter a key!"
+        return
+    end
+    
+    local success, response = pcall(function()
+        return game:HttpGet(KeySystemURL)
+    end)
+    
+    if success then
+        if response:find(key) then
+            StatusLabel.Text = "Key is valid!"
+        else
+            StatusLabel.Text = "Invalid key!"
+        end
+    else
+        StatusLabel.Text = "Failed to check key!"
+    end
+end)

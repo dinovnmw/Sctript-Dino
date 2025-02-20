@@ -2,63 +2,51 @@
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
-local UserInputService = game:GetService("UserInputService")
 local VirtualUser = game:GetService("VirtualUser")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
 local localPlayer = Players.LocalPlayer
 local character = localPlayer.Character or localPlayer.CharacterAdded:Wait()
 local humanoid = character:WaitForChild("Humanoid")
 local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
 local backpack = localPlayer:FindFirstChild("Backpack")
 
-task.spawn(function()
-    while true do
-        task.wait()
-        if currentTarget and currentTarget.Character and currentTarget.Character:FindFirstChild("HumanoidRootPart") then
-            local mouse = localPlayer:GetMouse()
-            mouse.Target = currentTarget.Character.HumanoidRootPart
-        end
-    end
-end)
-
 humanoid.WalkSpeed = 0
 humanoid.JumpPower = 0
 game.Workspace.Gravity = 0
 
-local screenGui = Instance.new("ScreenGui")
-screenGui.Parent = game.CoreGui
+-- UI
+local screenGui = Instance.new("ScreenGui", game.CoreGui)
 
-local frame = Instance.new("Frame")
+local frame = Instance.new("Frame", screenGui)
 frame.Size = UDim2.new(0, 250, 0, 150)
 frame.Position = UDim2.new(0.5, -125, 0.2, 0)
 frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 frame.BorderSizePixel = 0
 frame.Active = true
 frame.Draggable = true
-frame.Parent = screenGui
 
-local titleLabel = Instance.new("TextLabel")
+local titleLabel = Instance.new("TextLabel", frame)
 titleLabel.Size = UDim2.new(1, 0, 0, 30)
 titleLabel.Text = "DINO AUTOBOUNTY"
 titleLabel.TextColor3 = Color3.new(1, 1, 1)
 titleLabel.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-titleLabel.Parent = frame
 
-local nextPlayerButton = Instance.new("TextButton")
-nextPlayerButton.Size = UDim2.new(1, 0, 0, 40)
-nextPlayerButton.Position = UDim2.new(0, 0, 0, 40)
-nextPlayerButton.Text = "Start"
-nextPlayerButton.TextColor3 = Color3.new(1, 1, 1)
-nextPlayerButton.BackgroundColor3 = Color3.fromRGB(70, 130, 180)
-nextPlayerButton.Parent = frame
+local startButton = Instance.new("TextButton", frame)
+startButton.Size = UDim2.new(1, 0, 0, 40)
+startButton.Position = UDim2.new(0, 0, 0, 40)
+startButton.Text = "Start"
+startButton.TextColor3 = Color3.new(1, 1, 1)
+startButton.BackgroundColor3 = Color3.fromRGB(70, 130, 180)
 
-local closeButton = Instance.new("TextButton")
+local closeButton = Instance.new("TextButton", frame)
 closeButton.Size = UDim2.new(1, 0, 0, 40)
 closeButton.Position = UDim2.new(0, 0, 0, 90)
 closeButton.Text = "Close"
 closeButton.TextColor3 = Color3.new(1, 1, 1)
 closeButton.BackgroundColor3 = Color3.fromRGB(255, 69, 58)
-closeButton.Parent = frame
 
+-- Lấy player gần nhất
 local function getNearestPlayer()
     local closestPlayer = nil
     local closestDistance = math.huge
@@ -74,16 +62,30 @@ local function getNearestPlayer()
     return closestPlayer
 end
 
-local function tweenToPosition(part, position)
-    local distance = (part.Position - position).Magnitude
+-- **Cập nhật tween để bay thay vì nhảy**
+local function flyToPosition(position)
     local speed = 300
-    local time = distance / speed
-    local tweenInfo = TweenInfo.new(math.max(time, 0.02), Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
-    local tweenGoal = {CFrame = CFrame.new(position)}
-    local tween = TweenService:Create(part, tweenInfo, tweenGoal)
-    tween:Play()
+    local direction = (position - humanoidRootPart.Position).unit
+    local flightTime = (position - humanoidRootPart.Position).Magnitude / speed
+
+    -- Vô hiệu hóa trọng lực để bay
+    humanoid.PlatformStand = true
+
+    -- Di chuyển liên tục trong khi giữ hướng bay
+    local flightTween = TweenService:Create(
+        humanoidRootPart,
+        TweenInfo.new(flightTime, Enum.EasingStyle.Linear, Enum.EasingDirection.Out),
+        {CFrame = CFrame.new(position)}
+    )
+    flightTween:Play()
+
+    -- Kích hoạt lại trọng lực sau khi bay xong
+    task.delay(flightTime, function()
+        humanoid.PlatformStand = false
+    end)
 end
 
+-- Trang bị vũ khí
 local function equipFirstItem()
     if backpack then
         for _, item in pairs(backpack:GetChildren()) do
@@ -95,60 +97,78 @@ local function equipFirstItem()
     end
 end
 
-local function fastAttack()
-    spawn(function()
-        while currentTarget do
-            if currentTarget and currentTarget.Character and currentTarget.Character:FindFirstChild("Humanoid") then
-                VirtualUser:CaptureController()
-                VirtualUser:ClickButton1(Vector2.new(0, 0))
-                wait(0.001) 
-            end
+-- Tấn công không delay
+function AttackNoCoolDown()
+    pcall(function()
+        local attackEvent = ReplicatedStorage:WaitForChild("Modules"):WaitForChild("Net"):WaitForChild("RE/RegisterAttack")
+        if attackEvent then
+            attackEvent:FireServer(1e-9) -- Gửi tín hiệu tấn công với delay cực thấp
         end
     end)
 end
 
+-- Tấn công tự động
 local function autoAttack()
     equipFirstItem()
-    fastAttack()
-end
-
-local function enableNoClip()
-    RunService.Stepped:Connect(function()
-        for _, part in pairs(character:GetDescendants()) do
-            if part:IsA("BasePart") or part:IsA("MeshPart") then
-                part.CanCollide = false
-                part.Transparency = 1
-            end
+    _G.AutoFarm = true
+    while _G.AutoFarm do
+        if currentTarget and currentTarget.Character and currentTarget.Character:FindFirstChild("Humanoid") then
+            AttackNoCoolDown()
         end
-    end)
+        task.wait(0.05)
+    end
 end
 
-enableNoClip()
+-- Xử lý hồi sinh
+local function onCharacterDied()
+    print("⚠️ Người chơi đã chết, đang chờ hồi sinh...")
+    _G.AutoFarm = false
+    wait(5)
 
-local currentTarget = nil
-RunService.Heartbeat:Connect(function()
-    if humanoid.Health <= 5000 then
-        local safePosition = humanoidRootPart.Position + Vector3.new(math.random(-1000, 1000), 100, math.random(-1000, 1000))
-        tweenToPosition(humanoidRootPart, safePosition)
-    elseif humanoid.Health > 10000 and currentTarget and currentTarget.Character and currentTarget.Character:FindFirstChild("HumanoidRootPart") then
-        local targetRoot = currentTarget.Character.HumanoidRootPart
-        tweenToPosition(humanoidRootPart, targetRoot.Position + Vector3.new(0, 3, 0))
-    end
+    character = localPlayer.Character or localPlayer.CharacterAdded:Wait()
+    humanoid = character:WaitForChild("Humanoid")
+    humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+    backpack = localPlayer:FindFirstChild("Backpack")
+
+    humanoid.WalkSpeed = 0
+    humanoid.JumpPower = 0
+    game.Workspace.Gravity = 0
+
+    print("✅ Hồi sinh thành công, tiếp tục AutoBounty!")
+end
+
+localPlayer.CharacterAdded:Connect(function(newCharacter)
+    character = newCharacter
+    humanoid = character:WaitForChild("Humanoid")
+    humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+    humanoid.Died:Connect(onCharacterDied)
 end)
 
-nextPlayerButton.MouseButton1Click:Connect(function()
+-- Xử lý khi nhấn Start
+startButton.MouseButton1Click:Connect(function()
     currentTarget = getNearestPlayer()
     if currentTarget then
-        autoAttack()
+        while _G.AutoFarm do
+            if currentTarget and currentTarget.Character and currentTarget.Character:FindFirstChild("HumanoidRootPart") then
+                local targetPos = currentTarget.Character.HumanoidRootPart.Position + Vector3.new(0, 5, 0)
+                flyToPosition(targetPos) -- **Dùng bay thay vì nhảy**
+                autoAttack()
+            else
+                currentTarget = getNearestPlayer()
+            end
+            task.wait(0.5)
+        end
     end
 end)
 
+-- Khi nhấn Close
 closeButton.MouseButton1Click:Connect(function()
     screenGui:Destroy()
+    _G.AutoFarm = false
     currentTarget = nil
     humanoid.WalkSpeed = 75
     humanoid.JumpPower = 100
     game.Workspace.Gravity = 196.2
 end)
 
-print("✅ Script chạy hoàn hảo!")
+print("✅ Script AutoBounty đã nâng cấp với bay mượt mà!")

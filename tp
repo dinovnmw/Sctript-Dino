@@ -109,14 +109,15 @@ local function autoAttackLoop()
     end
 end
 
--- Vòng lặp di chuyển: khi máu thấp thì bay ra, khi máu cao thì tiến về mục tiêu
+-- Vòng lặp di chuyển: khi máu thấp thì bay đi thật xa, khi máu cao thì tiến về mục tiêu
 local function movementLoop()
     while _G.AutoFarm do
         if humanoid.Health <= 5000 then
+            -- Khi máu thấp: bay đi thật xa (các khoảng cách ngẫu nhiên lớn hơn)
             local safePos = humanoidRootPart.Position + Vector3.new(
-                math.random(-1500, 1500),
-                math.random(280, 320),
-                math.random(-1500, 1500)
+                math.random(-5000, 5000),
+                math.random(500, 700),
+                math.random(-5000, 5000)
             )
             tweenToPosition(humanoidRootPart, safePos)
         elseif humanoid.Health > 10000 then

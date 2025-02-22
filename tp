@@ -42,7 +42,7 @@ end
 -- Tween đến vị trí chỉ định với chút ngẫu nhiên để tránh flag và tạo chuyển động mượt
 local function tweenToPosition(part, position)
     local distance = (part.Position - position).Magnitude
-    local baseSpeed = 400
+    local baseSpeed = 300
     local randomFactor = math.random(90, 110) / 100  -- từ 0.9 đến 1.1
     local speed = baseSpeed * randomFactor
     local time = distance / speed

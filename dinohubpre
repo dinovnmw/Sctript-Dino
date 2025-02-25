@@ -272,7 +272,21 @@ MainTab:CreateButton({
     end
 })
 MainTab:CreateButton({
-    Name = "Dino HUB V3(Pre)",
+    Name = "Dino HUB 3.(Pre)",
+    Callback = function()
+        print("DinoHub v3 đang chạy....")
+ loadstring(game:HttpGet("https://raw.githubusercontent.com/dinovnmw/Sctript-Dino/refs/heads/main/Dinohub%20farm"))()
+    end
+})
+MainTab:CreateButton({
+    Name = "Dino HUB 2.(Pre)",
+    Callback = function()
+        print("DinoHub v3 đang chạy....")
+ loadstring(game:HttpGet("https://raw.githubusercontent.com/dinovnmw/Sctript-Dino/refs/heads/main/dinohub%20farm2"))()
+    end
+})
+MainTab:CreateButton({
+    Name = "Dino HUB 1.(Pre)",
     Callback = function()
         print("DinoHub v3 đang chạy....")
  loadstring(game:HttpGet("https://raw.githubusercontent.com/dinovnmw/Sctript-Dino/refs/heads/main/pre"))()

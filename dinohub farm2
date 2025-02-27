@@ -17,7 +17,7 @@ local currentTime = tick()
 if currentTime - lastNotificationTime >= notificationCooldown then
     game.StarterGui:SetCore("SendNotification", {
         Title = "Banana Cat Hub-Blox Fruit [Premium]",
-        Text = "Đang tải",
+        Text = "Loading",
         Duration = 5
     })
     lastNotificationTime = currentTime

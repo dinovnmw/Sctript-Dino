@@ -16,8 +16,8 @@ local notificationCooldown = 10
 local currentTime = tick()
 if currentTime - lastNotificationTime >= notificationCooldown then
     game.StarterGui:SetCore("SendNotification", {
-        Title = "W-Azure",
-        Text = "Loading",
+        Title = "Banana Cat Hub-Blox Fruit [Premium]",
+        Text = "Đang tải",
         Duration = 5
     })
     lastNotificationTime = currentTime
@@ -1330,8 +1330,8 @@ end
 print("--[[Loaded UI]]--")
 Fluent = loadstring(game:HttpGet("https://raw.githubusercontent.com/LuaCrack/Library/refs/heads/main/LibraryFluent.lua"))()
 Window = Fluent:CreateWindow({
-    Title = "W-Azure [Premium]",
-    SubTitle = "True V2 discord.gg/w-azure",
+    Title = "Banana Cat Hub-Blox Fruit [Premium]",
+    SubTitle = "By ",
     TabWidth = 155,
     Size = UDim2.fromOffset(555, 320),
     Acrylic = false, 

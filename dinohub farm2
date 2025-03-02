@@ -1331,11 +1331,11 @@ print("--[[Loaded UI]]--")
 Fluent = loadstring(game:HttpGet("https://raw.githubusercontent.com/LuaCrack/Library/refs/heads/main/LibraryFluent.lua"))()
 Window = Fluent:CreateWindow({
     Title = "Banana Cat Hub-Blox Fruit [Premium]",
-    SubTitle = "By ",
+    SubTitle = "By Obi",
     TabWidth = 155,
     Size = UDim2.fromOffset(555, 320),
     Acrylic = false, 
-    Theme = "Luffy",
+    Theme = "Dark",
     MinimizeKey = Enum.KeyCode.LeftControl 
 })
 Shop = Window:AddTab({ Title = "Tab Shop", Icon = "" })

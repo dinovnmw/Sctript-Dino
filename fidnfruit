@@ -15,6 +15,18 @@ if not HumanoidRootPart then
     return
 end
 
+-- Tự động chọn phe Hải Quân nếu chưa vào
+local function selectMarine()
+    if ReplicatedStorage:FindFirstChild("Remotes") and ReplicatedStorage.Remotes:FindFirstChild("CommF_") then
+        local team = LocalPlayer.Team and LocalPlayer.Team.Name
+        if team ~= "Marines" then
+            ReplicatedStorage.Remotes.CommF_:InvokeServer("SetTeam", "Marines")
+            print("🚢 Đã chọn phe Hải Quân!")
+            task.wait(2) -- Chờ một chút để đảm bảo đổi phe
+        end
+    end
+end
+
 -- Quét danh sách trái một lần
 for _, fruit in ipairs(workspace:GetChildren()) do
     if fruit:IsA("Model") and fruit:FindFirstChild("Handle") then
@@ -36,13 +48,19 @@ local function findClosestFruit()
     return closestFruit
 end
 
--- Di chuyển đến trái ác quỷ (giảm tốc độ để tránh lag)
+-- Di chuyển đến trái ác quỷ với tốc độ cụ thể
 local function goToFruit(fruit)
     if not fruit or not fruit:FindFirstChild("Handle") then return end
     
     lastFruit = fruit
-    local tweenInfo = TweenInfo.new(0.8, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-    local tween = TweenService:Create(HumanoidRootPart, tweenInfo, {Position = fruit.Handle.Position})
+    local targetPosition = fruit.Handle.Position
+    local moveSpeed = 350 -- Tốc độ di chuyển (giá trị cố định)
+    
+    local direction = (targetPosition - HumanoidRootPart.Position).unit
+    local moveTime = (targetPosition - HumanoidRootPart.Position).Magnitude / moveSpeed
+    
+    local tweenInfo = TweenInfo.new(moveTime, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
+    local tween = TweenService:Create(HumanoidRootPart, tweenInfo, {Position = targetPosition})
     tween:Play()
     tween.Completed:Wait()
     
@@ -80,6 +98,7 @@ end
 
 -- Chạy Auto Nhặt Trái + Hop Server (Tối ưu hiệu suất)
 spawn(function()
+    selectMarine()
     local startTime = tick()
     while task.wait(3) do -- Giãn cách quét để tránh spam
         local fruit = findClosestFruit()

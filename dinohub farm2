@@ -1338,7 +1338,7 @@ Window = Fluent:CreateWindow({
     Theme = "Dark",
     MinimizeKey = Enum.KeyCode.LeftControl 
 })
-Shop = Window:AddTab({ Title = "Tab Shop", Icon = "" })
+Shop = Window:AddTab({ Title = "Shop", Icon = "" })
 sex = {
     "WildDares",
     "BossBuild",
@@ -2723,7 +2723,7 @@ spawn(function()
         end)
     end
 end)
-Main = Window:AddTab({ Title = "Tab Farming", Icon = "" })
+Main = Window:AddTab({ Title = "Farm", Icon = "" })
 Main:AddButton({
     Title = "Copy discord invite link",
     Callback = function()

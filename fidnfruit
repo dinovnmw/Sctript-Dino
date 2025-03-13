@@ -15,23 +15,22 @@ if not HumanoidRootPart then
     return
 end
 
--- Tự động chọn phe Hải Quân nếu chưa vào
-local function selectMarine()
-    if ReplicatedStorage:FindFirstChild("Remotes") and ReplicatedStorage.Remotes:FindFirstChild("CommF_") then
-        local team = LocalPlayer.Team and LocalPlayer.Team.Name
-        if not team or (team ~= "Marines" and team ~= "Pirates") then
-            ReplicatedStorage.Remotes.CommF_:InvokeServer("SetTeam", "Marines")
-            task.wait(2) -- Giảm thời gian chờ
-            ReplicatedStorage.Remotes.CommF_:InvokeServer("TeleportToSpawn") -- Đảm bảo vào game
-            task.wait(2)
-            if LocalPlayer.Team and LocalPlayer.Team.Name ~= "Marines" then
-                warn("Không thể chọn phe Hải Quân!")
-            else
-                print("🚢 Đã chọn phe Hải Quân!")
-            end
+-- Chọn phe giống Lion Hub Find Fruit V2
+function setTeam()
+    local team = LocalPlayer.Team and LocalPlayer.Team.Name
+    if not team or (team ~= "Marines" and team ~= "Pirates") then
+        ReplicatedStorage.Remotes.CommF_:InvokeServer("SetTeam", "Marines")
+        task.wait(1)
+        if LocalPlayer.Team == nil then
+            ReplicatedStorage.Remotes.CommF_:InvokeServer("SetTeam", "Pirates")
         end
+        task.wait(2)
+        ReplicatedStorage.Remotes.CommF_:InvokeServer("TeleportToSpawn")
+        print("🚢 Đã chọn phe:", LocalPlayer.Team and LocalPlayer.Team.Name or "Không xác định")
     end
 end
+
+spawn(setTeam)
 
 -- Quét danh sách trái một lần
 for _, fruit in ipairs(workspace:GetChildren()) do
@@ -62,18 +61,18 @@ local function goToFruit(fruit)
     local targetPosition = fruit.Handle.Position
     local moveSpeed = 350 -- Tốc độ di chuyển (giá trị cố định)
     
-    local direction = (targetPosition - HumanoidRootPart.Position).unit
     local moveTime = (targetPosition - HumanoidRootPart.Position).Magnitude / moveSpeed
-    
     local tweenInfo = TweenInfo.new(moveTime, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
     local tween = TweenService:Create(HumanoidRootPart, tweenInfo, {Position = targetPosition})
     tween:Play()
     tween.Completed:Wait()
     
-    -- Auto Store Fruit nếu có thể
-    if ReplicatedStorage:FindFirstChild("Remotes") and ReplicatedStorage.Remotes:FindFirstChild("CommF_") then
-        ReplicatedStorage.Remotes.CommF_:InvokeServer("StoreFruit")
-        print("📦 Đã tự động lưu trái ác quỷ vào kho!")
+    -- Auto Store Fruit theo cách của Lion Hub Find Fruit V2
+    for _, v in pairs(LocalPlayer.Backpack:GetChildren()) do
+        if v:IsA("Tool") and string.find(v.Name, "Fruit") then
+            ReplicatedStorage.Remotes.CommF_:InvokeServer("StoreFruit", v.Name)
+            print("📦 Đã tự động lưu trái ác quỷ vào kho:", v.Name)
+        end
     end
 end
 
@@ -104,7 +103,6 @@ end
 
 -- Chạy Auto Nhặt Trái + Hop Server (Tối ưu hiệu suất)
 spawn(function()
-    selectMarine()
     local startTime = tick()
     while task.wait(3) do -- Giãn cách quét để tránh spam
         local fruit = findClosestFruit()
@@ -120,7 +118,7 @@ spawn(function()
             })
             
             -- Nếu không có trái sau 10 giây -> hop server
-            if tick() - startTime >= 3 then
+            if tick() - startTime >= 10 then
                 hopServer()
                 break
             end

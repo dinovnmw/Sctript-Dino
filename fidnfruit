@@ -5,7 +5,7 @@ local TeleportService = game:GetService("TeleportService")
 local HttpService = game:GetService("HttpService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-local HumanoidRootPart = Character:FindFirstChild("HumanoidRootPart")
+local HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
 local lastFruit = nil
 local fruitList = {}
 
@@ -19,10 +19,16 @@ end
 local function selectMarine()
     if ReplicatedStorage:FindFirstChild("Remotes") and ReplicatedStorage.Remotes:FindFirstChild("CommF_") then
         local team = LocalPlayer.Team and LocalPlayer.Team.Name
-        if team ~= "Marines" then
+        if not team or (team ~= "Marines" and team ~= "Pirates") then
             ReplicatedStorage.Remotes.CommF_:InvokeServer("SetTeam", "Marines")
-            print("🚢 Đã chọn phe Hải Quân!")
-            task.wait(2) -- Chờ một chút để đảm bảo đổi phe
+            task.wait(2) -- Giảm thời gian chờ
+            ReplicatedStorage.Remotes.CommF_:InvokeServer("TeleportToSpawn") -- Đảm bảo vào game
+            task.wait(2)
+            if LocalPlayer.Team and LocalPlayer.Team.Name ~= "Marines" then
+                warn("Không thể chọn phe Hải Quân!")
+            else
+                print("🚢 Đã chọn phe Hải Quân!")
+            end
         end
     end
 end
@@ -66,8 +72,8 @@ local function goToFruit(fruit)
     
     -- Auto Store Fruit nếu có thể
     if ReplicatedStorage:FindFirstChild("Remotes") and ReplicatedStorage.Remotes:FindFirstChild("CommF_") then
-        ReplicatedStorage.Remotes.CommF_:InvokeServer("StoreFruit", fruit.Name)
-        print("📦 Đã tự động lưu trái:", fruit.Name)
+        ReplicatedStorage.Remotes.CommF_:InvokeServer("StoreFruit")
+        print("📦 Đã tự động lưu trái ác quỷ vào kho!")
     end
 end
 
@@ -114,7 +120,7 @@ spawn(function()
             })
             
             -- Nếu không có trái sau 10 giây -> hop server
-            if tick() - startTime >= 10 then
+            if tick() - startTime >= 3 then
                 hopServer()
                 break
             end

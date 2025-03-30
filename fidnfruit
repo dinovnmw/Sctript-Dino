@@ -16,21 +16,15 @@ if not HumanoidRootPart then
 end
 
 -- Chọn phe giống Lion Hub Find Fruit V2
-function setTeam()
-    local team = LocalPlayer.Team and LocalPlayer.Team.Name
-    if not team or (team ~= "Marines" and team ~= "Pirates") then
-        ReplicatedStorage.Remotes.CommF_:InvokeServer("SetTeam", "Marines")
-        task.wait(1)
-        if LocalPlayer.Team == nil then
-            ReplicatedStorage.Remotes.CommF_:InvokeServer("SetTeam", "Pirates")
-        end
-        task.wait(2)
-        ReplicatedStorage.Remotes.CommF_:InvokeServer("TeleportToSpawn")
-        print("🚢 Đã chọn phe:", LocalPlayer.Team and LocalPlayer.Team.Name or "Không xác định")
-    end
+getgenv().Team = "Marines"          -- Pirates or Marines
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Phatdepzaicrystal/Phat/refs/heads/main/Phat.lua"))()
+]] --
+if getgenv().Team == "Pirates" then
+    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("SetTeam", "Pirates")
+elseif getgenv().Team == "Marines" then
+    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("SetTeam", "Marines")
 end
-
-spawn(setTeam)
+wait(1)
 
 -- Quét danh sách trái một lần
 for _, fruit in ipairs(workspace:GetChildren()) do

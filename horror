@@ -1,0 +1,389 @@
+-- Các service cần thiết commnet cho dễ dùng nha
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local Lighting = game:GetService("Lighting")
+local UserInputService = game:GetService("UserInputService")
+local Workspace = game:GetService("Workspace")
+local StarterGui = game:GetService("StarterGui")
+local TweenService = game:GetService("TweenService")
+
+local lp = Players.LocalPlayer
+local camera = Workspace.CurrentCamera
+
+-- Biến điều khiển
+local Settings = {
+    ESPEnabled = true, -- Tự động bật
+    NoclipEnabled = true, -- Tự động bật
+    InvincibleEnabled = true, -- Tự động bật
+    UltraBrightEnabled = true, -- Tự động bật
+    FlyEnabled = true, -- Tự động bật
+    WalkSpeed = 50,
+    FlySpeed = 100,
+    NoclipSpeed = 50,
+    TweenTime = 0.1 -- Thời gian Tween (giây) cho di chuyển mượt
+}
+
+-- GUI điều khiển
+local gui = Instance.new("ScreenGui", lp.PlayerGui)
+gui.Name = "ControlGUI"
+
+local function createGUI()
+    local frame = Instance.new("Frame", gui)
+    frame.Size = UDim2.new(0, 200, 0, 350)
+    frame.Position = UDim2.new(0, 10, 0, 10)
+    frame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    frame.BackgroundTransparency = 0.3
+    frame.Active = true
+    frame.Draggable = true
+
+    local function createToggleButton(name, setting, yPos)
+        local button = Instance.new("TextButton", frame)
+        button.Size = UDim2.new(0, 180, 0, 30)
+        button.Position = UDim2.new(0, 10, 0, yPos)
+        button.Text = name .. ": " .. (Settings[setting] and "ON" or "OFF")
+        button.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+        button.TextColor3 = Color3.fromRGB(255, 255, 255)
+        button.MouseButton1Click:Connect(function()
+            Settings[setting] = not Settings[setting]
+            button.Text = name .. ": " .. (Settings[setting] and "ON" or "OFF")
+        end)
+        return button
+    end
+
+    local function createSlider(name, setting, yPos, min, max, default)
+        local label = Instance.new("TextLabel", frame)
+        label.Size = UDim2.new(0, 180, 0, 20)
+        label.Position = UDim2.new(0, 10, 0, yPos)
+        label.Text = name .. ": " .. Settings[setting]
+        label.BackgroundTransparency = 1
+        label.TextColor3 = Color3.new(1, 1, 1)
+
+        local slider = Instance.new("TextBox", frame)
+        slider.Size = UDim2.new(0, 180, 0, 20)
+        slider.Position = UDim2.new(0, 10, 0, yPos + 20)
+        slider.Text = tostring(Settings[setting])
+        slider.TextColor3 = Color3.new(1, 1, 1)
+        slider.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+        slider.TextChanged:Connect(function()
+            local value = tonumber(slider.Text)
+            if value and value >= min and value <= max then
+                Settings[setting] = value
+                label.Text = name .. ": " .. value
+            else
+                slider.Text = tostring(Settings[setting])
+            end
+        end)
+    end
+
+    createToggleButton("ESP", "ESPEnabled", 10)
+    createToggleButton("Noclip", "NoclipEnabled", 50)
+    createToggleButton("Invincible", "InvincibleEnabled", 90)
+    createToggleButton("Ultra Bright", "UltraBrightEnabled", 130)
+    createToggleButton("Fly", "FlyEnabled", 170)
+    createSlider("Walk Speed", "WalkSpeed", 210, 16, 200, 50)
+    createSlider("Fly Speed", "FlySpeed", 260, 50, 500, 100)
+    createSlider("Noclip Speed", "NoclipSpeed", 310, 20, 200, 50)
+    createSlider("Tween Time", "TweenTime", 360, 0.05, 1, 0.1)
+end
+createGUI()
+
+-- Noclip nâng cấp với Tween
+local noclipConnection
+local function toggleNoclip()
+    if noclipConnection then
+        noclipConnection:Disconnect()
+        noclipConnection = nil
+        if lp.Character then
+            local root = lp.Character:FindFirstChild("HumanoidRootPart")
+            if root then
+                local effect = root:FindFirstChild("NoclipEffect")
+                if effect then effect:Destroy() end
+            end
+        end
+    end
+
+    if Settings.NoclipEnabled then
+        local char = lp.Character
+        if not char then return end
+        local root = char:FindFirstChild("HumanoidRootPart")
+        local hum = char:FindFirstChildOfClass("Humanoid")
+        if not (root and hum) then return end
+
+        -- Hiệu ứng trực quan
+        local effect = Instance.new("PointLight")
+        effect.Name = "NoclipEffect"
+        effect.Brightness = 2
+        effect.Range = 10
+        effect.Color = Color3.fromRGB(0, 255, 255)
+        effect.Parent = root
+
+        -- Di chuyển với Tween
+        noclipConnection = RunService.Stepped:Connect(function()
+            if not Settings.NoclipEnabled then return end
+            for _, part in pairs(char:GetDescendants()) do
+                if part:IsA("BasePart") then
+                    part.CanCollide = false
+                end
+            end
+
+            local moveDir = Vector3.new(0, 0, 0)
+            if UserInputService:IsKeyDown(Enum.KeyCode.W) then
+                moveDir = moveDir + camera.CFrame.LookVector
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.S) then
+                moveDir = moveDir - camera.CFrame.LookVector
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.A) then
+                moveDir = moveDir - camera.CFrame.RightVector
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.D) then
+                moveDir = moveDir + camera.CFrame.RightVector
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
+                moveDir = moveDir + Vector3.new(0, 1, 0)
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then
+                moveDir = moveDir - Vector3.new(0, 1, 0)
+            end
+
+            if moveDir.Magnitude > 0 then
+                local targetCFrame = root.CFrame + (moveDir.Unit * Settings.NoclipSpeed * RunService.Stepped:Wait())
+                local tweenInfo = TweenInfo.new(Settings.TweenTime, Enum.EasingStyle.Linear)
+                local tween = TweenService:Create(root, tweenInfo, {CFrame = targetCFrame})
+                tween:Play()
+                root.Velocity = Vector3.new(0, 0, 0)
+            end
+        end)
+    end
+end
+
+-- Ultra Bright
+local function toggleUltraBright()
+    if Settings.UltraBrightEnabled then
+        for _, v in ipairs(Lighting:GetChildren()) do
+            if v:IsA("PostEffect") then v:Destroy() end
+        end
+        Lighting.Brightness = 10
+        Lighting.ClockTime = 12
+        Lighting.FogEnd = 1e10
+        Lighting.GlobalShadows = false
+        Lighting.OutdoorAmbient = Color3.new(1, 1, 1)
+        Lighting.Ambient = Color3.new(1, 1, 1)
+
+        local light = camera:FindFirstChild("UltraBrightLight") or Instance.new("PointLight")
+        light.Name = "UltraBrightLight"
+        light.Parent = camera
+        light.Brightness = 10
+        light.Range = 150
+        light.Color = Color3.new(1, 1, 1)
+        light.Shadows = false
+    else
+        local light = camera:FindFirstChild("UltraBrightLight")
+        if light then light:Destroy() end
+        Lighting:ClearAllChildren()
+    end
+end
+
+-- Bất khả chiến bại
+local function toggleInvincible()
+    local function protectHumanoid(char)
+        local hum = char:WaitForChild("Humanoid", 5)
+        if hum and Settings.InvincibleEnabled then
+            hum.BreakJointsOnDeath = false
+            hum:SetStateEnabled(Enum.HumanoidStateType.Dead, false)
+            hum.Health = hum.MaxHealth
+            hum:GetPropertyChangedSignal("Health"):Connect(function()
+                if hum.Health < hum.MaxHealth then
+                    hum.Health = hum.MaxHealth
+                end
+            end)
+        end
+    end
+
+    lp.CharacterAdded:Connect(function(char)
+        task.wait(1)
+        protectHumanoid(char)
+    end)
+    if lp.Character then protectHumanoid(lp.Character) end
+end
+
+-- Tăng tốc chạy
+local function updateSpeed()
+    local function applySpeed(char)
+        local hum = char:FindFirstChildOfClass("Humanoid")
+        if hum then
+            hum.WalkSpeed = Settings.WalkSpeed
+        end
+    end
+
+    lp.CharacterAdded:Connect(function(char)
+        task.wait(1)
+        applySpeed(char)
+    end)
+    if lp.Character then applySpeed(lp.Character) end
+end
+
+-- Fly với Tween
+local flyConnection
+local function toggleFly()
+    if flyConnection then
+        flyConnection:Disconnect()
+        flyConnection = nil
+        if lp.Character then
+            local root = lp.Character:FindFirstChild("HumanoidRootPart")
+            if root then
+                local bv = root:FindFirstChild("FlyVelocity")
+                if bv then bv:Destroy() end
+            end
+        end
+    end
+
+    if Settings.FlyEnabled then
+        local char = lp.Character
+        if not char then return end
+        local root = char:FindFirstChild("HumanoidRootPart")
+        local hum = char:FindFirstChildOfClass("Humanoid")
+        if not (root and hum) then return end
+
+        local bodyVelocity = Instance.new("BodyVelocity")
+        bodyVelocity.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+        bodyVelocity.Name = "FlyVelocity"
+        bodyVelocity.Parent = root
+
+        flyConnection = RunService.RenderStepped:Connect(function()
+            if not Settings.FlyEnabled then
+                bodyVelocity:Destroy()
+                return
+            end
+            local moveDir = Vector3.new(0, 0, 0)
+            if UserInputService:IsKeyDown(Enum.KeyCode.W) then
+                moveDir = moveDir + camera.CFrame.LookVector
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.S) then
+                moveDir = moveDir - camera.CFrame.LookVector
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.A) then
+                moveDir = moveDir - camera.CFrame.RightVector
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.D) then
+                moveDir = moveDir + camera.CFrame.RightVector
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
+                moveDir = moveDir + Vector3.new(0, 1, 0)
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then
+                moveDir = moveDir - Vector3.new(0, 1, 0)
+            end
+
+            if moveDir.Magnitude > 0 then
+                local targetVelocity = moveDir.Unit * Settings.FlySpeed
+                local tweenInfo = TweenInfo.new(Settings.TweenTime, Enum.EasingStyle.Linear)
+                local tween = TweenService:Create(bodyVelocity, tweenInfo, {Velocity = targetVelocity})
+                tween:Play()
+            else
+                bodyVelocity.Velocity = Vector3.new(0, 0, 0)
+            end
+        end)
+    end
+end
+
+-- ESP nâng cao
+local ESPFolder = Instance.new("Folder", lp.PlayerGui)
+ESPFolder.Name = "ESPFolder"
+
+local function createESPForPart(part, color)
+    if part:FindFirstChild("ESP_Box") then return end
+    local box = Instance.new("BoxHandleAdornment")
+    box.Name = "ESP_Box"
+    box.Adornee = part
+    box.AlwaysOnTop = true
+    box.ZIndex = 10
+    box.Size = part.Size + Vector3.new(0.1, 0.1, 0.1)
+    box.Transparency = 0.5
+    box.Color3 = color
+    box.Parent = ESPFolder
+end
+
+local function createNameTag(char, dist)
+    if char:FindFirstChild("ESP_NameTag") then return end
+    local head = char:FindFirstChild("Head")
+    if not head then return end
+
+    local billboard = Instance.new("BillboardGui")
+    billboard.Name = "ESP_NameTag"
+    billboard.Adornee = head
+    billboard.Size = UDim2.new(0, 150, 0, 50)
+    billboard.StudsOffset = Vector3.new(0, 2, 0)
+    billboard.AlwaysOnTop = true
+    billboard.Parent = ESPFolder
+
+    local textLabel = Instance.new("TextLabel")
+    textLabel.BackgroundTransparency = 1
+    textLabel.Size = UDim2.new(1, 0, 1, 0)
+    textLabel.TextColor3 = Color3.new(1, 0, 0)
+    textLabel.TextStrokeTransparency = 0
+    textLabel.Text = char.Name .. " [" .. math.floor(dist) .. "m]"
+    textLabel.Font = Enum.Font.SourceSansBold
+    textLabel.TextScaled = true
+    textLabel.Parent = billboard
+end
+
+local function updateESP()
+    if not Settings.ESPEnabled then
+        ESPFolder:ClearAllChildren()
+        return
+    end
+
+    ESPFolder:ClearAllChildren()
+
+    for _, model in pairs(Workspace:GetChildren()) do
+        if model:IsA("Model") then
+            local hum = model:FindFirstChildOfClass("Humanoid")
+            local plr = Players:GetPlayerFromCharacter(model)
+            if hum and not plr and model:FindFirstChild("HumanoidRootPart") then
+                local rootPart = model.HumanoidRootPart
+                local dist = lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") and (lp.Character.HumanoidRootPart.Position - rootPart.Position).Magnitude or 0
+                local color = dist < 30 and Color3.fromRGB(0, 255, 0) or dist < 70 and Color3.fromRGB(255, 255, 0) or Color3.fromRGB(255, 0, 0)
+                createESPForPart(rootPart, color)
+                createNameTag(model, dist)
+            end
+        end
+    end
+end
+
+-- Tối ưu vòng lặp
+RunService.Heartbeat:Connect(function()
+    pcall(updateESP)
+    pcall(toggleNoclip)
+    pcall(toggleUltraBright)
+    pcall(toggleInvincible)
+    pcall(toggleFly)
+    pcall(updateSpeed)
+end)
+
+-- Phím tắt cho Noclip (N) và Fly (F)
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    if input.KeyCode == Enum.KeyCode.N then
+        Settings.NoclipEnabled = not Settings.NoclipEnabled
+        StarterGui:SetCore("SendNotification", {
+            Title = "Noclip",
+            Text = "Noclip " .. (Settings.NoclipEnabled and "Enabled" or "Disabled"),
+            Duration = 3
+        })
+    elseif input.KeyCode == Enum.KeyCode.F then
+        Settings.FlyEnabled = not Settings.FlyEnabled
+        StarterGui:SetCore("SendNotification", {
+            Title = "Fly",
+            Text = "Fly " .. (Settings.FlyEnabled and "Enabled" or "Disabled"),
+            Duration = 3
+        })
+    end
+end)
+
+-- Thông báo khởi tạo
+StarterGui:SetCore("SendNotification", {
+    Title = "Script Loaded",
+    Text = "All features enabled. Use GUI to toggle or adjust speeds. N for Noclip, F for Fly.",
+    Duration = 5
+})
